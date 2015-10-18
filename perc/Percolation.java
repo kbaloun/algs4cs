@@ -1,7 +1,6 @@
-    import edu.princeton.cs.algs4.StdRandom;
-    import edu.princeton.cs.algs4.StdStats;
-    import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-    import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+import edu.princeton.cs.algs4.StdOut;
 
 public class Percolation {
     
@@ -9,7 +8,7 @@ public class Percolation {
     private int len;
     private int WFsize;
     private int opensites = 0;
-    private static int finalcount;
+    public static int finalcount;
     private WeightedQuickUnionUF myUF;
     
     public Percolation(int N) {
@@ -49,7 +48,7 @@ public class Percolation {
        
        
        //System.out.println("opened ",i,"and ",j,"\n");
-       StdOut.printf("opened %d %d %d\n", i, j, opensites);
+       //StdOut.printf("opened %d %d %d\n", i, j, opensites);
    }
    public boolean isOpen(int i, int j)    {
        // is site (row i, column j) open?
@@ -58,24 +57,31 @@ public class Percolation {
    }
    public boolean isFull(int i, int j)  {
        // is site (row i, column j) full?
+       // first, if it is empty, it isn't
        if (xy[i][j] == 0) return false;
-       if (xy[i][j] > 1 & i==0) return true;
-       for (int h=0; h<i; h++) {
-       }
+       
+       //count this point i,j within the UF int array
+       int p = i*(len-1)+j+1; // the newly opened point
+       
+       //is it connected to the top root of the tree?
+       if (myUF.connected(0,len*len+1)) { 
+           return true;
+       } 
        return false;
    }
+   
    public boolean percolates()  {
        // does the system percolate
-       if (myUF.connected(0,len*len+1) || opensites > 30) {
+       if (myUF.connected(0,len*len+1)) {
            finalcount = opensites; 
            return true;
        } 
-       //if (opensites > 12) return true;
+       //if (opensites > 1000) return true;
        return false;
    }
 
-       public static void main(String[] args)  { // test client (optional)
-       System.out.println("Now percolate");
+   public static void main(String[] args)  { // test client (optional)
+       //System.out.println("Now percolate");
        int len = Integer.parseInt(args[0]);
        if (len <= 0) throw new IllegalArgumentException("Percolation takes one positive integer argument.");
        
@@ -87,7 +93,6 @@ public class Percolation {
        while (!perc.percolates()) {
        
            while(true) {
-               // the first pass uses the old values of newx/y, freshly opened
                // if the .open() fails, we get an infinite loop
                int newx = StdRandom.uniform(len);
                int newy = StdRandom.uniform(len);

@@ -1,7 +1,6 @@
-    import edu.princeton.cs.algs4.StdRandom;
-    import edu.princeton.cs.algs4.StdStats;
-    import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-    import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.StdStats;
+import edu.princeton.cs.algs4.StdOut;
     
 public class PercolationStats {
 
@@ -16,6 +15,21 @@ public class PercolationStats {
         // perform T independent experiments on an N-by-N grid
         for (int i=0;i<T;i++) {
             Percolation onerun = new Percolation(N);
+            while (!onerun.percolates()) {
+       
+            while(true) {
+                // if the .open() fails, we get an infinite loop
+                int newx = StdRandom.uniform(N);
+                int newy = StdRandom.uniform(N);
+               
+                if (!onerun.isOpen(newx,newy)) {
+                    onerun.open(newx,newy);
+                    break;
+               }
+           } 
+
+        }
+        StdOut.printf("Percolated at %d\n",onerun.finalcount);
         }
     }
     
@@ -40,6 +54,12 @@ public class PercolationStats {
 
     public static void main(String[] args) {
         // test client (described below)
+        int len = Integer.parseInt(args[0]);
+        int runs = Integer.parseInt(args[1]);
+        if (len <= 0) throw new IllegalArgumentException("PercolationStats requires a positive integer matrix size.");
+        if (runs <= 0) throw new IllegalArgumentException("PercolationStats requires a positive integer iterations count.");
+       
+        PercolationStats sts = new PercolationStats(len,runs);
         System.out.println("done!");
         StdOut.printf("mean                    = %.2f\n", X);
         StdOut.printf("stddev                  = %.2f\n", X);
