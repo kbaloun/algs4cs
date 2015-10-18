@@ -10,9 +10,13 @@ public class PercolationStats {
     private double confLo = 0;
     private double confHi = 0;
     private static double X = 0; /// todo: remove X
+    
+    private int[] runs;
+
     public PercolationStats(int N, int T) {
         if (N <= 0 || T <= 0 ) throw new IllegalArgumentException("N and T must be positive integers");
         // perform T independent experiments on an N-by-N grid
+        runs = new int[T];
         for (int i=0;i<T;i++) {
             Percolation onerun = new Percolation(N);
             while (!onerun.percolates()) {
@@ -29,27 +33,28 @@ public class PercolationStats {
            } 
 
         }
-        StdOut.printf("Percolated at %d\n",onerun.finalcount);
+        runs[i] = onerun.finalcount;
+        //StdOut.printf("Percolated at %d\n",onerun.finalcount);
         }
     }
     
     public double mean() {
         // sample mean of percolation threshold
-        return summeans;
+        return StdStats.mean(runs);
     }
     public double stddev() {
         // sample standard deviation of percolation threshold
-        return stddevs;
+        return StdStats.stddev(runs);
     }
     
     public double confidenceLo()  {
         // low  endpoint of 95% confidence interval
-        return confLo;
+        return StdStats.mean(runs)-(StdStats.stddev(runs)*1.96);
     }
     
     public double confidenceHi() {
         // high endpoint of 95% confidence interval
-        return confHi;
+        return StdStats.mean(runs)+(StdStats.stddev(runs)*1.96);
     }
 
     public static void main(String[] args) {
@@ -60,10 +65,11 @@ public class PercolationStats {
         if (runs <= 0) throw new IllegalArgumentException("PercolationStats requires a positive integer iterations count.");
        
         PercolationStats sts = new PercolationStats(len,runs);
-        System.out.println("done!");
-        StdOut.printf("mean                    = %.2f\n", X);
-        StdOut.printf("stddev                  = %.2f\n", X);
-        StdOut.printf("95% confidence interval = %.2f, %.2f\n", X, X);
+        //System.out.println("done!");
+        StdOut.printf("mean                    = %.2f\n", sts.mean());
+        StdOut.printf("stddev                  = %.2f\n", sts.stddev());
+        StdOut.printf("95%% ");
+        StdOut.printf(" confidence interval = %.2f, %.2f\n", sts.confidenceLo(), sts.confidenceHi());
     }
 
 //The constructor should throw a java.lang.IllegalArgumentException if either N ² 0 or T ² 0.
