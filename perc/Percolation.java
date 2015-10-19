@@ -9,7 +9,7 @@ public class Percolation {
     private int WFsize;
     private int opensites = 0;
     private int finalNode;
-    public static int finalcount;
+    private static int finalcount;
     private WeightedQuickUnionUF myUF;
     private WeightedQuickUnionUF myUFnoFinal;
     
@@ -43,20 +43,21 @@ public class Percolation {
        //StdOut.printf("running is %d %d %d %d %d\n", finalNode,len, p, i, j);
        
        // connect the zero node at top with any opening on the first row
-       if (i==1) myUF.union(0,p);
+       //if (i==1) myUF.union(0,p);
+       if (i == 1) addUFPoint(0,p,true);
        
-       if (i > 1 && isOpen(i-1,j)) myUF.union(p,p-len); //above
-       if (i== 2 && isFull(i-1,j)) myUF.union(0,p-len); //if above, also to top
+       if (i > 1 && isOpen(i-1,j)) addUFPoint(p,p-len,true); //above
+       if (i== 2 && isFull(i-1,j)) addUFPoint(0,p-len,true); //if above, also to top
        
-       if (j > 1 && isOpen(i,j-1)) myUF.union(p,p-1); //left
-       if (j < len && isOpen(i,j+1)) myUF.union(p,p+1); //right
+       if (j > 1 && isOpen(i,j-1)) addUFPoint(p,p-1,true); //left
+       if (j < len && isOpen(i,j+1)) addUFPoint(p,p+1,true); //right
        
-       if (i < len && isOpen(i+1,j)) myUF.union(p,p+len); //below
-       if (i == len-1 && isFull(i+1,j)) myUF.union(p+len,finalNode);
+       if (i < len && isOpen(i+1,j)) addUFPoint(p,p+len,true); //below
+       if (i == len-1 && isFull(i+1,j)) addUFPoint(p+len,finalNode,false);
        
        // connect the final node at the bottom with the entire bottom row
        if (i == len) {
-           myUF.union(p,finalNode);
+           addUFPoint(p,finalNode,false);
            //StdOut.printf("joining to final node is %d %d %d %d %d\n", finalNode,len, p, i, j);
        }
        
@@ -91,7 +92,7 @@ public class Percolation {
        //}
        
        //is it connected to the top root of the tree?
-       if (myUF.connected(0,p)) { 
+       if (myUF.connected(0,p) && myUFnoFinal.connected(0,p)) { 
            //StdOut.printf("FULL is %d %d %d %d\n", len, p, i, j);
            return true;
        } 
@@ -134,5 +135,10 @@ public class Percolation {
 
        }
        //StdOut.printf("Percolated at %d\n",finalcount);   
+   }
+   
+   private void addUFPoint(int p1, int p2, boolean lastnode) {
+       myUF.union(p1,p2);
+       if(lastnode) myUFnoFinal.union(p1,p2);
    }
 }

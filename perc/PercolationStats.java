@@ -4,37 +4,44 @@ import edu.princeton.cs.algs4.StdOut;
     
 public class PercolationStats {
 
-    private int runcounts = 0;
+    private int opencounts = 0;
+    private double threshold = 0;
     private double summeans = 0;
     private double stddevs = 0;
     private double confLo = 0;
     private double confHi = 0;
-    private static double X = 0; /// todo: remove X
     
-    private int[] runs;
+    private double[] runs;
 
     public PercolationStats(int N, int T) {
         if (N < 1 || T < 1 ) throw new IllegalArgumentException("N and T must be positive integers");
         // perform T independent experiments on an N-by-N grid
-        runs = new int[T];
-        for (int i=1;i<=T;i++) {
+        runs = new double[T];
+        double gridsize = N*N;
+        for (int i=1;i<T;i++) {
             Percolation onerun = new Percolation(N);
+            opencounts = 0;
             while (!onerun.percolates()) {
        
-            while(true) {
-                // if the .open() fails, we get an infinite loop
-                int newx = StdRandom.uniform(N);
-                int newy = StdRandom.uniform(N);
-               
-                if (!onerun.isOpen(newx,newy)) {
-                    onerun.open(newx,newy);
-                    break;
-               }
-           } 
-
-        }
-        runs[i] = onerun.finalcount;
-        //StdOut.printf("Percolated at %d\n",onerun.finalcount);
+                while(true) {
+                    // if the .open() fails, we get an infinite loop
+                    int newx = StdRandom.uniform(1,N+1);
+                    int newy = StdRandom.uniform(1,N+1);
+                    
+                    //newx= newx+1;
+                    //newy= newy+1;
+                    
+                    if (!onerun.isOpen(newx,newy)) {
+                        onerun.open(newx,newy);
+                        opencounts += 1;
+                        break;
+                    }
+                } 
+                
+            }
+            threshold = (opencounts/gridsize);
+            runs[i] = threshold;
+            //StdOut.printf("Percolated at %d %.6f\n",opencounts,threshold);
         }
     }
     
