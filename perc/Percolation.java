@@ -1,15 +1,14 @@
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-import edu.princeton.cs.algs4.StdOut;
+//import edu.princeton.cs.algs4.StdOut;
 
 public class Percolation {
     
     private int[][] xy;
     private int len;
-    private int WFsize;
+    private int wfSize;
     private int opensites = 0;
     private int finalNode;
-    private static int finalcount;
     private WeightedQuickUnionUF myUF;
     private WeightedQuickUnionUF myUFnoFinal;
     
@@ -19,22 +18,22 @@ public class Percolation {
         xy = new int[N+1][N+1];
         len = N;
         finalNode = len*len+1;
-        WFsize = (N*N)+2;
-        for (int i=1; i<=N; i++)
-            for (int j=1; j<=N; j++)
+        wfSize = (N*N)+2;
+        for (int i = 1; i <= N; i++)
+            for (int j = 1; j <= N; j++)
                 xy[i][j] = 0;
         
         // UF is an a long snake, counting each row l-r going down
-        myUF = new WeightedQuickUnionUF(WFsize);
+        myUF = new WeightedQuickUnionUF(wfSize);
         
         // use a copy, to hack prevent of backbleed thru final node
-        myUFnoFinal = new WeightedQuickUnionUF(WFsize);
+        myUFnoFinal = new WeightedQuickUnionUF(wfSize);
         
     }
    // open site (row i, column j) if it is not open already
    public void open(int i, int j)  {
-       if (i < 1 || i > this.len) throw new IndexOutOfBoundsException("row index i out of bounds");
-       if (j < 1 || j > this.len) throw new IndexOutOfBoundsException("row index j out of bounds");
+       if ( i < 1 || i > this.len ) throw new IndexOutOfBoundsException("row index i out of bounds");
+       if ( j < 1 || j > this.len ) throw new IndexOutOfBoundsException("row index j out of bounds");
        xy[i][j] = 1; 
        opensites += 1;
        
@@ -44,20 +43,20 @@ public class Percolation {
        
        // connect the zero node at top with any opening on the first row
        //if (i==1) myUF.union(0,p);
-       if (i == 1) addUFPoint(0,p,true);
+       if (i == 1) addUFPoint(0, p, true);
        
-       if (i > 1 && isOpen(i-1,j)) addUFPoint(p,p-len,true); //above
-       if (i== 2 && isFull(i-1,j)) addUFPoint(0,p-len,true); //if above, also to top
+       if ( i > 1 && isOpen(i-1,j) ) addUFPoint(p, p-len, true); //above
+       if ( i == 2 && isFull(i-1,j) ) addUFPoint(0, p-len, true); //if above, also to top
        
-       if (j > 1 && isOpen(i,j-1)) addUFPoint(p,p-1,true); //left
-       if (j < len && isOpen(i,j+1)) addUFPoint(p,p+1,true); //right
+       if ( j > 1 && isOpen(i,j-1) ) addUFPoint(p, p-1, true); //left
+       if ( j < len && isOpen(i,j+1) ) addUFPoint(p, p+1, true); //right
        
-       if (i < len && isOpen(i+1,j)) addUFPoint(p,p+len,true); //below
-       if (i == len-1 && isFull(i+1,j)) addUFPoint(p+len,finalNode,false);
+       if ( i < len && isOpen(i+1,j) ) addUFPoint(p, p+len, true); //below
+       if ( i == len-1 && isFull(i+1,j) ) addUFPoint(p+len, finalNode, false);
        
        // connect the final node at the bottom with the entire bottom row
        if (i == len) {
-           addUFPoint(p,finalNode,false);
+           addUFPoint(p, finalNode, false);
            //StdOut.printf("joining to final node is %d %d %d %d %d\n", finalNode,len, p, i, j);
        }
        
@@ -92,7 +91,7 @@ public class Percolation {
        //}
        
        //is it connected to the top root of the tree?
-       if (myUF.connected(0,p) && myUFnoFinal.connected(0,p)) { 
+       if (myUF.connected(0, p) && myUFnoFinal.connected(0, p)) { 
            //StdOut.printf("FULL is %d %d %d %d\n", len, p, i, j);
            return true;
        } 
@@ -102,8 +101,7 @@ public class Percolation {
    public boolean percolates()  {
        // does the system percolate
        //StdOut.printf("Percolates is %d %d\n", finalNode, opensites);
-       if (myUF.connected(0,finalNode)) {
-           finalcount = opensites; 
+       if (myUF.connected(0, finalNode)) {
            return true;
        } 
        //if (opensites > 1000) return true;
@@ -127,18 +125,18 @@ public class Percolation {
                int newx = StdRandom.uniform(len);
                int newy = StdRandom.uniform(len);
                
-               if (!perc.isOpen(newx,newy)) {
-                   perc.open(newx,newy);
+               if ( !perc.isOpen(newx, newy) ) {
+                   perc.open(newx, newy);
                    break;
                }
            } 
 
        }
-       //StdOut.printf("Percolated at %d\n",finalcount);   
+       //StdOut.printf("Percolated at %d\n",opensites);   
    }
    
    private void addUFPoint(int p1, int p2, boolean lastnode) {
-       myUF.union(p1,p2);
-       if(lastnode) myUFnoFinal.union(p1,p2);
+       myUF.union(p1, p2);
+       if(lastnode) myUFnoFinal.union(p1, p2);
    }
 }

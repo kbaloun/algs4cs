@@ -6,10 +6,6 @@ public class PercolationStats {
 
     private int opencounts = 0;
     private double threshold = 0;
-    private double summeans = 0;
-    private double stddevs = 0;
-    private double confLo = 0;
-    private double confHi = 0;
     
     private double[] runs;
 
@@ -18,7 +14,7 @@ public class PercolationStats {
         // perform T independent experiments on an N-by-N grid
         runs = new double[T];
         double gridsize = N*N;
-        for (int i=1;i<T;i++) {
+        for (int i=0;i<T;i++) {
             Percolation onerun = new Percolation(N);
             opencounts = 0;
             while (!onerun.percolates()) {
