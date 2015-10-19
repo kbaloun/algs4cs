@@ -32,8 +32,8 @@ public class Percolation {
     }
    // open site (row i, column j) if it is not open already
    public void open(int i, int j)  {
-       if ( i < 1 || i > this.len ) throw new IndexOutOfBoundsException("row index i out of bounds");
-       if ( j < 1 || j > this.len ) throw new IndexOutOfBoundsException("row index j out of bounds");
+       if (i < 1 || i > this.len) throw new IndexOutOfBoundsException("row index i out of bounds");
+       if (j < 1 || j > this.len) throw new IndexOutOfBoundsException("row index j out of bounds");
        xy[i][j] = 1; 
        opensites += 1;
        
@@ -45,14 +45,14 @@ public class Percolation {
        //if (i==1) myUF.union(0,p);
        if (i == 1) addUFPoint(0, p, true);
        
-       if ( i > 1 && isOpen(i-1,j) ) addUFPoint(p, p-len, true); //above
-       if ( i == 2 && isFull(i-1,j) ) addUFPoint(0, p-len, true); //if above, also to top
+       if (i > 1 && isOpen(i-1, j)) addUFPoint(p, p-len, true); //above
+       if (i == 2 && isFull(i-1, j)) addUFPoint(0, p-len, true); //if above, also to top
        
-       if ( j > 1 && isOpen(i,j-1) ) addUFPoint(p, p-1, true); //left
-       if ( j < len && isOpen(i,j+1) ) addUFPoint(p, p+1, true); //right
+       if (j > 1 && isOpen(i, j-1)) addUFPoint(p, p-1, true); //left
+       if (j < len && isOpen(i, j+1)) addUFPoint(p, p+1, true); //right
        
-       if ( i < len && isOpen(i+1,j) ) addUFPoint(p, p+len, true); //below
-       if ( i == len-1 && isFull(i+1,j) ) addUFPoint(p+len, finalNode, false);
+       if (i < len && isOpen(i+1, j)) addUFPoint(p, p+len, true); //below
+       if (i == len-1 && isFull(i+1, j)) addUFPoint(p+len, finalNode, false);
        
        // connect the final node at the bottom with the entire bottom row
        if (i == len) {
@@ -120,12 +120,12 @@ public class Percolation {
        
        while (!perc.percolates()) {
        
-           while(true) {
+           while (true) {
                // if the .open() fails, we get an infinite loop
                int newx = StdRandom.uniform(len);
                int newy = StdRandom.uniform(len);
                
-               if ( !perc.isOpen(newx, newy) ) {
+               if (!perc.isOpen(newx, newy)) {
                    perc.open(newx, newy);
                    break;
                }
@@ -137,6 +137,6 @@ public class Percolation {
    
    private void addUFPoint(int p1, int p2, boolean lastnode) {
        myUF.union(p1, p2);
-       if(lastnode) myUFnoFinal.union(p1, p2);
+       if (lastnode) myUFnoFinal.union(p1, p2);
    }
 }

@@ -10,25 +10,25 @@ public class PercolationStats {
     private double[] runs;
 
     public PercolationStats(int N, int T) {
-        if (N < 1 || T < 1 ) throw new IllegalArgumentException("N and T must be positive integers");
+        if (N < 1 || T < 1) throw new IllegalArgumentException("N and T must be positive integers");
         // perform T independent experiments on an N-by-N grid
         runs = new double[T];
         double gridsize = N*N;
-        for (int i=0;i<T;i++) {
+        for (int i = 0; i < T; i++) {
             Percolation onerun = new Percolation(N);
             opencounts = 0;
             while (!onerun.percolates()) {
        
-                while(true) {
+                while (true) {
                     // if the .open() fails, we get an infinite loop
-                    int newx = StdRandom.uniform(1,N+1);
-                    int newy = StdRandom.uniform(1,N+1);
+                    int newx = StdRandom.uniform(1, N+1);
+                    int newy = StdRandom.uniform(1, N+1);
                     
                     //newx= newx+1;
                     //newy= newy+1;
                     
-                    if (!onerun.isOpen(newx,newy)) {
-                        onerun.open(newx,newy);
+                    if (!onerun.isOpen(newx, newy)) {
+                        onerun.open(newx, newy);
                         opencounts += 1;
                         break;
                     }
@@ -73,7 +73,7 @@ public class PercolationStats {
         if (len <= 0) throw new IllegalArgumentException("PercolationStats requires a positive integer matrix size.");
         if (runs <= 0) throw new IllegalArgumentException("PercolationStats requires a positive integer iterations count.");
        
-        PercolationStats sts = new PercolationStats(len,runs);
+        PercolationStats sts = new PercolationStats(len, runs);
         //System.out.println("done!");
         StdOut.printf("mean                    = %.2f\n", sts.mean());
         StdOut.printf("stddev                  = %.2f\n", sts.stddev());
