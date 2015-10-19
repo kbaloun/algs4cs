@@ -8,43 +8,57 @@ public class Percolation {
     private int len;
     private int WFsize;
     private int opensites = 0;
+    private int finalNode;
     public static int finalcount;
     private WeightedQuickUnionUF myUF;
+    private WeightedQuickUnionUF myUFnoFinal;
     
     public Percolation(int N) {
         // create N-by-N grid, with all sites blocked
         if (N <= 0) throw new IllegalArgumentException("N must be a positive integer");
-        xy = new int[N][N];
+        xy = new int[N+1][N+1];
         len = N;
+        finalNode = len*len+1;
         WFsize = (N*N)+2;
-        for (int i=0; i<N; i++)
-            for (int j=0; j<N; j++)
+        for (int i=1; i<=N; i++)
+            for (int j=1; j<=N; j++)
                 xy[i][j] = 0;
         
         // UF is an a long snake, counting each row l-r going down
         myUF = new WeightedQuickUnionUF(WFsize);
-        // connect the zero node at top with the entire first row
-        for (int i=0; i<N; i++) myUF.union(0,i+1);
-        // connect the final node at the bottom with the entire bottom row
-        int firstInBottomRow = len*(len-1);
-        int finalNode = len*len+1;
-        for (int i=0; i<N; i++) myUF.union(firstInBottomRow+i+1,finalNode);
+        
+        // use a copy, to hack prevent of backbleed thru final node
+        myUFnoFinal = new WeightedQuickUnionUF(WFsize);
         
     }
    // open site (row i, column j) if it is not open already
    public void open(int i, int j)  {
-       if (i < 0 || i > this.len) throw new IndexOutOfBoundsException("row index i out of bounds");
-       if (j < 0 || j > this.len) throw new IndexOutOfBoundsException("row index j out of bounds");
+       if (i < 1 || i > this.len) throw new IndexOutOfBoundsException("row index i out of bounds");
+       if (j < 1 || j > this.len) throw new IndexOutOfBoundsException("row index j out of bounds");
        xy[i][j] = 1; 
        opensites += 1;
        
        //connect this site and any of 4 open sites around it, in UF
-       int p = i*(len-1)+j+1; // the newly opened point
+       int p = (i-1)*(len)+j; // the newly opened point
+       //StdOut.printf("running is %d %d %d %d %d\n", finalNode,len, p, i, j);
        
-       if (i > 0 && isOpen(i-1,j)) myUF.union(p,p-len); //above
-       if (j > 0 && isOpen(i,j-1)) myUF.union(p,p-1); //left
-       if (j < len-1 && isOpen(i,j+1)) myUF.union(p,p+1); //right
-       if (i < len-1 && isOpen(i+1,j)) myUF.union(p,p+len); //below
+       // connect the zero node at top with any opening on the first row
+       if (i==1) myUF.union(0,p);
+       
+       if (i > 1 && isOpen(i-1,j)) myUF.union(p,p-len); //above
+       if (i== 2 && isFull(i-1,j)) myUF.union(0,p-len); //if above, also to top
+       
+       if (j > 1 && isOpen(i,j-1)) myUF.union(p,p-1); //left
+       if (j < len && isOpen(i,j+1)) myUF.union(p,p+1); //right
+       
+       if (i < len && isOpen(i+1,j)) myUF.union(p,p+len); //below
+       if (i == len-1 && isFull(i+1,j)) myUF.union(p+len,finalNode);
+       
+       // connect the final node at the bottom with the entire bottom row
+       if (i == len) {
+           myUF.union(p,finalNode);
+           //StdOut.printf("joining to final node is %d %d %d %d %d\n", finalNode,len, p, i, j);
+       }
        
        
        //System.out.println("opened ",i,"and ",j,"\n");
@@ -52,19 +66,33 @@ public class Percolation {
    }
    public boolean isOpen(int i, int j)    {
        // is site (row i, column j) open?
+       if (i < 1 || i > this.len) throw new IndexOutOfBoundsException("row index i out of bounds");
+       if (j < 1 || j > this.len) throw new IndexOutOfBoundsException("row index j out of bounds");
        if (xy[i][j] > 0) return true;
        return false;
    }
    public boolean isFull(int i, int j)  {
        // is site (row i, column j) full?
+       if (i < 1 || i > this.len) throw new IndexOutOfBoundsException("row index i out of bounds");
+       if (j < 1 || j > this.len) throw new IndexOutOfBoundsException("row index j out of bounds");
+       
        // first, if it is empty, it isn't
-       if (xy[i][j] == 0) return false;
+       //if (this.xy[i][j] == 0) return false;
        
        //count this point i,j within the UF int array
-       int p = i*(len-1)+j+1; // the newly opened point
+       int p = (i-1)*(len)+j; // the newly opened point
+       
+       // if this p is connected ONLY THRU the last node, return false
+       // to prevent bleedthru.  too bad UF can not temp delete
+       //if (myUF.connected(p,finalNode)) {
+       //    if (!isFull(i-1,j) && !isFull(i,j+1) && !isFull(i,j-1)) {
+       //        return false;
+       //    }
+       //}
        
        //is it connected to the top root of the tree?
-       if (myUF.connected(0,len*len+1)) { 
+       if (myUF.connected(0,p)) { 
+           //StdOut.printf("FULL is %d %d %d %d\n", len, p, i, j);
            return true;
        } 
        return false;
@@ -72,7 +100,8 @@ public class Percolation {
    
    public boolean percolates()  {
        // does the system percolate
-       if (myUF.connected(0,len*len+1)) {
+       //StdOut.printf("Percolates is %d %d\n", finalNode, opensites);
+       if (myUF.connected(0,finalNode)) {
            finalcount = opensites; 
            return true;
        } 
@@ -86,9 +115,9 @@ public class Percolation {
        if (len <= 0) throw new IllegalArgumentException("Percolation takes one positive integer argument.");
        
        Percolation perc = new Percolation(len);
-       //perc.open(0,1);
-       //if(perc.isOpen(0,1)) System.out.println("yes, open");
-       //if(!perc.isOpen(0,2)) System.out.println("yes, not open");
+       //perc.open(1,1);
+       //if(perc.isOpen(1,1)) System.out.println("yes, open");
+       //if(!perc.isOpen(1,2)) System.out.println("yes, not open");
        
        while (!perc.percolates()) {
        
@@ -104,26 +133,6 @@ public class Percolation {
            } 
 
        }
-       StdOut.printf("Percolated at %d\n",finalcount);
-       
-//The constructor should throw a java.lang.IllegalArgumentException if N ² 0. 
-       //if any argument to open(), isOpen(), or isFull() is outside its prescribed range
-       
-       //a constant number of calls to the union-find methods union(), find(), connected(), and count().
-       
-        //Initialize all sites to be blocked.
-
-//Repeat the following until the system percolates:
-
-    //Choose a site (row i, column j) uniformly at random among all blocked sites.
-
-    //Open the site (row i, column j). 
-       
-       //use the weighted quick-union algorithm from WeightedQuickUnionUF
-       //only call library functions in StdIn, StdOut, StdRandom, StdStats, WeightedQuickUnionUF and java.lang
-
-//The fraction of sites that are opened when the system percolates provides an estimate of the percolation threshold. 
-   
+       //StdOut.printf("Percolated at %d\n",finalcount);   
    }
-   
 }
