@@ -3,17 +3,22 @@ import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Subset {
+    
+    private int subsetSize = 1;
     public static void main(String[] args) {
         
         // for running time to be linear to the input, must randomize array during
         //   insertion?  and return it in order?
         // OR take a random item while breaking pointers cuz order doesn't matter?
-        // OR...
+        // OR...  
+        // --> first try shuffle them inbound, and Deque.iterator() them out.
         
         //take a command-line integer k
+        if (Integer.parseInt(args[0]) > 1) subsetSize = Integer.parseInt(args[0]);
         
         //reads in a sequence of N strings from standard input 
         //    using StdIn.readString()
+        String inS = StdIn.readString();
         
         //puts them on a lovely new RandomizedQueue
         
