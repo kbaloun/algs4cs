@@ -1,5 +1,3 @@
-import edu.princeton.cs.algs4.StdRandom;
-import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -19,9 +17,9 @@ public class Deque<Item> implements Iterable<Item> {
     
     // create a single queue element node, the item and a pointer
     private class Node {
-        Item item;
-        Node nxt;
-        Node prv; // dbl linked list fits in 48N, per p201
+        private Item item;
+        private Node nxt;
+        private Node prv; // dbl linked list fits in 48N, per p201
     }
     
     public Deque() {
@@ -38,6 +36,14 @@ public class Deque<Item> implements Iterable<Item> {
         lastP.item = null;
         lastP.nxt = null;
         //len is still zero
+        
+        /*
+         I MUST understand this...
+         /Users/karel/algs4/queues/Deque.java:30:14: The local variable or parameter 'firstP' has the 
+         same name as an instance variable. Use a different name.
+         /Users/karel/algs4/queues/Deque.java:31:14: The local variable or parameter 'lastP' has the 
+         same name as an instance variable. Use a different name.
+         */
         
         assert check();
         
@@ -85,8 +91,7 @@ public class Deque<Item> implements Iterable<Item> {
     public boolean isEmpty()  {
         // is the deque empty?
         //if (firstP.item == null || lastP.item == null)
-        if (len < 1) return true;
-        else return false;
+        return len < 1;
         
     }
     public int size()     {
@@ -130,7 +135,7 @@ public class Deque<Item> implements Iterable<Item> {
     public Item removeFirst()     {
         
         //throw a java.util.NoSuchElementException if the client attempts to remove an item from an empty deque
-        if (isEmpty()) throw new java.util.NoSuchElementException("sorry can't remove from an empty deque");
+        if (isEmpty()) throw new NoSuchElementException("sorry can't remove from an empty deque");
         
         // remove and return the item from the front
         Item item = firstP.item;
@@ -146,7 +151,7 @@ public class Deque<Item> implements Iterable<Item> {
     public Item removeLast() {
                 
         //throw a java.util.NoSuchElementException if the client attempts to remove an item from an empty deque
-        if (isEmpty()) throw new java.util.NoSuchElementException("sorry can't remove from an empty deque");
+        if (isEmpty()) throw new NoSuchElementException("sorry can't remove from an empty deque");
         
         // remove and return the item from the end
         Item item = lastP.item;
@@ -156,7 +161,7 @@ public class Deque<Item> implements Iterable<Item> {
         } else {
             //lastP.prv.nxt = null;  //nullpointerexception
             lastP = lastP.prv;  
-            //lastP.nxt = null; //nullpointerexception  TODO:necessary??
+            //lastP.nxt = null; //nullpointerexception, is this necessary?
         }
         len -= 1;
         return item;
@@ -173,8 +178,7 @@ public class Deque<Item> implements Iterable<Item> {
         // return an iterator over items in order from front to end
         private Node current = firstP;
         public boolean hasNext() {
-            if (len > 0) return true;
-            else return false;
+            return len > 0;
             //return current.item != null;
         }
         public void remove() {
@@ -185,7 +189,7 @@ public class Deque<Item> implements Iterable<Item> {
             //throw a java.util.NoSuchElementException if the client calls the next() method
             //   in the iterator and there are no more items to return. 
             //if (isEmpty()) throw new java.util.NoSuchElementException("no more iterating -- all empty");
-            if (!hasNext()) throw new java.util.NoSuchElementException("no more iterating -- all empty");
+            if (!hasNext()) throw new NoSuchElementException("no more iterating -- all empty");
 
             Item item = current.item;
             current = current.nxt;
@@ -224,7 +228,7 @@ public class Deque<Item> implements Iterable<Item> {
         
         deq.addLast("the last");
         deq.addLast("the real end");       
-        StdOut.printf("%d",deq.size());
+        StdOut.printf("%d", deq.size());
         // System.out.println(deq.toString());
         // java.lang.NullPointerException
         //   at Deque$ListIterator.next(Deque.java:191)
@@ -237,7 +241,7 @@ public class Deque<Item> implements Iterable<Item> {
         System.out.println(deq.removeLast());
         System.out.println(deq.removeFirst());
         System.out.println("all done");
-        StdOut.printf("%d",deq.size());
+        StdOut.printf("%d", deq.size());
         
         
         //while(!isEmpty()) { return removeFirst(); }

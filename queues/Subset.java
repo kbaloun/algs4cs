@@ -25,12 +25,24 @@ public class Subset {
         
         //reads in a sequence of N strings from standard input 
         //    using StdIn.readString()
-        while (!StdIn.hasNextLine()) {
-            String inS = StdIn.readLine();
-            rq.enqueue(inS);
+        while (!StdIn.hasNextChar()) {
+            //String inS = StdIn.readLine();
+            //rq.enqueue(inS);
             //StdOut.println(line);
         }
-        /*
+        String[] lines = StdIn.readAllStrings();
+        for (String line : lines) {
+            rq.enqueue(line);
+            //System.out.println(line);
+        }
+                /*
+        while (StdIn.hasNextLine()) {
+            if (!StdIn.hasNextLine()) break;
+            String[] line = StdIn.readAllStrings();
+            rq.enqueue(line);
+            //System.out.println(line);
+        }
+
         String ins = new String();
         while (inS = StdIn.readString()) {
             // inS = StdIn.readString();
@@ -40,7 +52,7 @@ public class Subset {
         
         //prints out exactly k of them, uniformly at random.
         for (int i = 0; i < subsetSize; i++) {
-            System.out.println( rq.dequeue() );
+            System.out.println(rq.dequeue());
         }     
         
         //Each item from the sequence can be printed out at most once.

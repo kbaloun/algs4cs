@@ -1,6 +1,4 @@
 import edu.princeton.cs.algs4.StdRandom;
-import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.StdOut;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -59,7 +57,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         //throw a java.util.NoSuchElementException if the client attempts to sample 
         //   or dequeue an item from an empty randomized queue
         if (len < 1) { 
-            throw new java.util.NoSuchElementException("can not dequeue an empty queue");
+            throw new NoSuchElementException("can not dequeue an empty queue");
         }
         
         // remove and return a random item
@@ -88,7 +86,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         int indx = StdRandom.uniform(0, len-1);
         
         if (this.isEmpty()) { 
-            throw new java.util.NoSuchElementException("can not sample an empty queue");
+            throw new NoSuchElementException("can not sample an empty queue");
         }
         return queue[indx];
     }
@@ -114,7 +112,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
          //   shuffledQueue[i] = queue[i];
         //}
         //shuffledQueue.StdRandom.shuffle();
-        int cnt = 0; 
+        private int cnt = 0; 
 
         public boolean hasNext() {
             return queue[cnt+1] != null;
