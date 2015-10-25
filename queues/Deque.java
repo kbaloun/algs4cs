@@ -28,28 +28,20 @@ public class Deque<Item> implements Iterable<Item> {
         
         // initialize an empty first pointer as null?
         // TODO? d = new Deque();
-        Node first = new Node();
-        Node last = new Node();
-        first.nxt = last;
-        first.item = null;
-        first.prv = null;
-        last.prv = first;
-        last.item = null;
-        last.nxt = null;
-        //len is still zero
+        firstP = new Node();
+        lastP = new Node();
+        sentinelP = new Node();
         
-        Node sentinel = new Node();
-        sentinel.nxt = first;
-        sentinel.prv = last;
+        firstP.nxt = lastP;
+        firstP.item = null;
+        firstP.prv = sentinelP;
+        lastP.nxt = sentinelP;
+        lastP.item = null;
+        lastP.prv = firstP;
+        
         // this keeps a permanently open reference to both end nodes, to avoid null pointers
-        
-        /*
-         I MUST understand this... why different names in static definition than in the constructor?
-         /Users/karel/algs4/queues/Deque.java:30:14: The local variable or parameter 'firstP' has the 
-         same name as an instance variable. Use a different name.
-         /Users/karel/algs4/queues/Deque.java:31:14: The local variable or parameter 'lastP' has the 
-         same name as an instance variable. Use a different name.
-         */
+        sentinelP.nxt = firstP;
+        sentinelP.prv = lastP;
         
         assert check();
         
@@ -98,12 +90,24 @@ public class Deque<Item> implements Iterable<Item> {
         //Throw a java.lang.NullPointerException if the client attempts to add a null item
         if (it == null) throw new java.lang.NullPointerException("no adding null items");
         
-        Node oldFirst = firstP; 
-        Node newFirst = new Node();
-        newFirst.item = it;
-        newFirst.nxt = oldFirst;
-        newFirst.prv = null; //just ensuring it is the new first node
-        firstP = newFirst;
+        //if (len <= 1 && firstP.item == null) 
+        if (firstP.item == null) { 
+            //System.out.println("in addFirst: firstP item is null");
+            firstP.item = it;
+        } else {
+            if (lastP.item == null) {
+                // the first and last nodes exist, the last only is empty.
+                lastP.item = it;
+            } else {
+                Node newSecond = new Node();
+                newSecond.prv = firstP;
+                newSecond.nxt = firstP.nxt;
+                newSecond.item = firstP.item;
+                firstP.nxt =  newSecond;
+                firstP.item = it;
+                firstP.prv = sentinelP;  //just ensuring it is the first node still
+            }
+        }
         len += 1;
         
         /*  breaks with NullPointerException
@@ -116,15 +120,26 @@ public class Deque<Item> implements Iterable<Item> {
         */
         
     }
-    public void addLast(Item item)  {
+    public void addLast(Item it)  {
         //Throw a java.lang.NullPointerException if the client attempts to add a null item
-        if (item == null) throw new java.lang.NullPointerException("no adding null items");
+        if (it == null) throw new java.lang.NullPointerException("no adding null items");
         
-        Node oldLast = lastP; 
-        lastP = new Node();
-        lastP.item = item;
-        lastP.prv = oldLast;
-        lastP.nxt = null; //just ensuring it is the new last node
+        //if (len <= 1 && lastP != null && lastP.item == null)  
+        if (lastP.item == null)  {
+            if (firstP.item == null) {
+                firstP.item = it;
+            } else {
+                lastP.item = it;
+            }
+        } else {
+            Node secondLastP = new Node();
+            secondLastP.item = lastP.item;
+            secondLastP.prv = lastP.prv;
+            secondLastP.nxt = lastP;
+            lastP.item = it;
+            lastP.prv = secondLastP;
+            lastP.nxt = sentinelP; //just ensuring it is the new last node still
+        }
         len += 1;        
     }
     
@@ -135,13 +150,18 @@ public class Deque<Item> implements Iterable<Item> {
         
         // remove and return the item from the front
         Item item = firstP.item;
-        if (firstP.nxt == null || firstP.nxt == lastP) {
+        //if (firstP.nxt == lastP) {
+        if (len <=2) {
+            //System.out.println("in remove First: firstP.nxt is lastP");
             // if the next node is the last node, must just keep this node alive
-            //firstP.item = null;
-            firstP.nxt = lastP;
+            firstP.item = lastP.item;
+            lastP.item = null;
+            //firstP.nxt = lastP;
             // i think decrementing len effectively nulls it out, and setting it to null makes a nullpointer exception
         } else {
+            firstP.prv = null;
             firstP = firstP.nxt;
+            firstP.prv = sentinelP;
         }
         len -= 1;
         return item;
@@ -153,14 +173,24 @@ public class Deque<Item> implements Iterable<Item> {
         
         // remove and return the item from the end
         Item item = null;
-        if (lastP.prv == null || lastP.prv == firstP) { 
+        //if (lastP.prv == firstP) { 
+        if (len <= 2) {
+            //System.out.println("in removeLast: lastP.prv is firstP");
             // if this the last/only node, must return the item from first node.
-            item = firstP.item;
-            lastP.prv = firstP;
+            if (lastP.item == null) {
+                item = firstP.item;
+                firstP.item = null;
+            } else {
+                item = lastP.item;
+                lastP.item = null;
+            }
         } else {
             // this is the normal case
             item = lastP.item;
-            lastP = lastP.prv;
+            lastP.item = null;
+            lastP.nxt = null;
+            lastP = lastP.prv;  //how is this lastP.prv null'd out?
+            lastP.nxt = sentinelP;
         }
         /*
         if (lastP.prv == firstP) {
@@ -191,7 +221,7 @@ public class Deque<Item> implements Iterable<Item> {
             //return current.item != null;
         }
         public void remove() {
-            throw new java.lang.UnsupportedOperationException("remove is not supported");
+            throw new UnsupportedOperationException("remove is not supported");
         }
         public Item next() {
             
@@ -228,26 +258,26 @@ public class Deque<Item> implements Iterable<Item> {
         // unit testing
         
         Deque deq = new Deque();
-        String it = "first";
-        deq.addFirst(it);
-
-        deq.addFirst("newer first");
-        it = "newer first";
-        deq.addFirst(it);
         
+       
+        deq.addFirst("was first");
+        deq.addFirst("second");
+        deq.addFirst("first first");
         deq.addLast("the last");
         deq.addLast("the real end");       
-        StdOut.printf("%d", deq.size());
+        StdOut.printf("phase 1 load is %d \n", deq.size());
 
         // Item it = deq.removeLast();
         // damnit non-static class Item cannot be referenced from a static context
         System.out.println(deq.removeLast());
-        deq.removeFirst();
+        System.out.println(deq.removeFirst());
         System.out.println(deq.removeLast());
         System.out.println(deq.removeFirst());
         System.out.println(deq.removeLast());
         System.out.println("done, phase 1");
         StdOut.printf("%d \n", deq.size());
+        
+         /*
         
         deq.isEmpty();
         deq.isEmpty();
@@ -264,8 +294,28 @@ public class Deque<Item> implements Iterable<Item> {
         deq.removeFirst();
         deq.removeLast();
 
-        System.out.println("done, phase 2");
+        System.out.println("done, phase 2\n");
+        StdOut.printf("With size %d \n", deq.size());
+        */
+        
+        //System.out.println("First returns zero, should return 6\n");
+        deq.addLast(6);
+        deq.addFirst(7);
+        //StdOut.printf("size is 2? %d \n", deq.size());
+        System.out.println(deq.removeFirst()); //     ==> 7
+        System.out.println(deq.removeFirst()); //     ==> 0
+        System.out.println("done, phase 3\n");
         StdOut.printf("%d \n", deq.size());
+        
+        for (int i = 1; i < 10; i++) deq.addFirst(i);
+        int icnt = 0;
+        for (Iterator j = deq.iterator(); j.hasNext(); ) {
+            System.out.println(deq.removeFirst());
+            icnt++;
+            //if (i % 10 == 0) StdOut.printf("queue size is %d \n", rq.size());
+        }        
+        StdOut.printf("Dequeued %d. Size at end %d \n", icnt, deq.size());
+        System.out.println("done, phase 4\n");
         
         //while(!isEmpty()) { return removeFirst(); }
 

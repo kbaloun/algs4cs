@@ -117,17 +117,18 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         private int cnt = 0; 
 
         public boolean hasNext() {
-            return queue[cnt+1] != null;
+            return queue[cnt] != null;
         }
         public void remove() {
             throw new java.lang.UnsupportedOperationException("remove is not supported");
         }
         public Item next() {
             
-            //while(this.hasNext()) {
-                cnt += 1;
-                return queue[cnt];
-            //}
+            if (!hasNext()) throw new NoSuchElementException("no more iterating -- all empty");
+ 
+            cnt += 1;
+            return queue[cnt];
+
            
             //throw a java.util.NoSuchElementException if the client calls the next() method
             //   in the iterator and there are no more items to return. 
@@ -172,6 +173,18 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         StdOut.printf("Size at end %d \n", rq.size());
         System.out.println("done, phase 2");
+        for (int i = 50; i < 150; i++) {
+            rq.enqueue(i);
+        }
+        int icnt = 0;
+        for (Iterator j = rq.iterator(); j.hasNext(); ) {
+            rq.dequeue();
+            icnt++;
+            //if (i % 10 == 0) StdOut.printf("queue size is %d \n", rq.size());
+        }        
+        StdOut.printf("Dequeued %d. Size at end %d \n", icnt, rq.size());
+        System.out.println("done, phase 3");
+        
         
     }
     
