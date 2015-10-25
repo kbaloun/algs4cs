@@ -13,8 +13,9 @@ public class Deque<Item> implements Iterable<Item> {
     private int len = 0;
     private Node firstP;
     private Node lastP;
-    private Item q;
     private Deque d;
+    //private static Item it;
+    // nope: non-static class Item cannot be referenced from a static context
     
     // create a single queue element node, the item and a pointer
     private class Node {
@@ -25,15 +26,25 @@ public class Deque<Item> implements Iterable<Item> {
     
     public Deque() {
         // construct an empty deque
-        // initialize an empty first pointer as null
         
-        //d = new Node;
-        //TODO
+        // initialize an empty first pointer as null?
+        // TODO? d = new Deque();
+        Node firstP = new Node();
+        Node lastP = new Node();
+        firstP.nxt = lastP;
+        firstP.item = null;
+        firstP.prv = null;
+        lastP.prv = firstP;
+        lastP.item = null;
+        lastP.nxt = null;
+        
+        //len is still zero
+        
     }
     
     public boolean isEmpty()  {
         // is the deque empty?
-        if (firstP == null || lastP == null)
+        if (firstP.item == null || lastP.item == null)
             return true;
         else return false;
         
@@ -47,11 +58,16 @@ public class Deque<Item> implements Iterable<Item> {
         if (item == null) throw new java.lang.NullPointerException("no adding null items");
         
         // add the item to the front
-        Node oldFirst = firstP;
-        Node newFirst = new Node();
-        newFirst.item = item;
-        newFirst.nxt = oldFirst;
-        firstP = newFirst;
+        if (firstP == null) { 
+            firstP = item;
+        } else {
+            Node oldFirst = firstP; 
+            Node newFirst = new Node();
+            newFirst.item = item;
+            newFirst.nxt = oldFirst;
+            newFirst.prv = null; //just ensuring it is the new first node
+            firstP = newFirst;
+        }
         len += 1;
     }
     public void addLast(Item item)  {
@@ -59,12 +75,15 @@ public class Deque<Item> implements Iterable<Item> {
         if (item == null) throw new java.lang.NullPointerException("no adding null items");
         
         // add the item to the end
-        Node prevLast = lastP;
-        lastP = new Node();
-        lastP.item = item;
-        lastP.nxt = null;
-        if (isEmpty()) firstP = lastP;
-        else prevLast.nxt = lastP;
+        if (lastP.item == null) { 
+            lastP.item = item;
+        } else {
+            Node oldLast = lastP; 
+            lastP = new Node();
+            lastP.item = item;
+            lastP.prv = oldLast;
+            lastP.nxt = null; //just ensuring it is the new last node
+        }
         len += 1;
     }
     public Item removeFirst()     {
@@ -74,9 +93,14 @@ public class Deque<Item> implements Iterable<Item> {
         
         // remove and return the item from the front
         Item item = firstP.item;
-        firstP = firstP.nxt;
+        if (firstP.nxt.item == null) {
+            // if the next node is the last node, must just keep this node alive
+            firstP.item = null;
+            firstP.nxt = lastP;
+        } else {
+            firstP = firstP.nxt;
+        }
         len -= 1;
-        if (isEmpty()) lastP = null;
         return item;
     }
     public Item removeLast() {
@@ -86,9 +110,17 @@ public class Deque<Item> implements Iterable<Item> {
         
         // remove and return the item from the end
         Item item = lastP.item;
+        if (lastP.prv.item == null) {
+            // if the previous node is the first node, must just keep this node alive
+            lastP.item = null;
+            lastP.prv = firstP;
+        } else {
+            lastP = lastP.prv;            
+        }
+        lastP.nxt = null;
         len -= 1;
-        if (isEmpty()) lastP = null;
         return item;
+        
         // how find new last item? do i need a double linked list?
         // p146 advocates against DLlist, but with 48N i have space for 2nd int pointer, and 
         // says traverse from front is only other option and takes 
@@ -101,7 +133,7 @@ public class Deque<Item> implements Iterable<Item> {
         // return an iterator over items in order from front to end
         private Node current = firstP;
         public boolean hasNext() {
-            return current != null;
+            return current.item != null;
         }
         public void remove() {
             throw new java.lang.UnsupportedOperationException("remove is not supported");
@@ -122,6 +154,27 @@ public class Deque<Item> implements Iterable<Item> {
     
     public static void main(String[] args)   {
         // unit testing
+        
+        Deque deq = new Deque();
+        String it = "first";
+        deq.addFirst(it);
+        /*
+        //deq.addFirst("newer first");
+        it = "newer first";
+        deq.addFirst(it);
+        deq.addLast("the last");
+        deq.addLast("the real end");
+        StdOut.printf("%d",deq.size());
+        deq.removeLast();
+        deq.removeFirst();
+        deq.removeLast();
+        deq.removeFirst();
+        */
+        System.out.println("all done");
+        StdOut.printf("%d",deq.size());
+        
+        
+        //while(!isEmpty()) { return removeFirst(); }
 
     }
 
