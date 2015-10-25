@@ -129,9 +129,10 @@ public class Deque<Item> implements Iterable<Item> {
         
         // remove and return the item from the front
         Item item = firstP.item;
-        if (firstP.nxt == lastP) {
+        if (firstP.nxt == null || firstP.nxt == lastP) {
             // if the next node is the last node, must just keep this node alive
             //firstP.item = null;
+            firstP.nxt = lastP;
             // i think decrementing len effectively nulls it out, and setting it to null makes a nullpointer exception
         } else {
             firstP = firstP.nxt;
@@ -146,9 +147,10 @@ public class Deque<Item> implements Iterable<Item> {
         
         // remove and return the item from the end
         Item item = null;
-        if (firstP.nxt == lastP) { 
+        if (lastP.prv == null || lastP.prv == firstP) { 
             // if this the last/only node, must return the item from first node.
             item = firstP.item;
+            lastP.prv = firstP;
         } else {
             // this is the normal case
             item = lastP.item;
@@ -238,9 +240,19 @@ public class Deque<Item> implements Iterable<Item> {
         System.out.println(deq.removeLast());
         System.out.println(deq.removeFirst());
         System.out.println(deq.removeLast());
-        System.out.println("all done");
-        StdOut.printf("%d", deq.size());
+        System.out.println("done, phase 1");
+        StdOut.printf("%d \n", deq.size());
         
+        deq.isEmpty();
+        deq.isEmpty();
+        deq.isEmpty();
+        deq.addFirst(3);
+        System.out.println(deq.removeLast());
+        //deq.removeLast();
+        //deq.addFirst(5);
+        //deq.removeLast();
+        System.out.println("done, phase 2");
+        StdOut.printf("%d \n", deq.size());
         
         //while(!isEmpty()) { return removeFirst(); }
 

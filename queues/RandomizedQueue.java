@@ -25,8 +25,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
     public boolean isEmpty() {
         // is the queue empty?
-        if (len < 1) return false;
-        return true;
+        if (len < 1) return true;
+        return false;
     }
     public int size()     {
         // return the number of items on the queue
