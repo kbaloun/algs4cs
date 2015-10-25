@@ -65,15 +65,14 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         // get a random item, return it, and fill in the hole from the end of the array
         ////System.out.println(len);
         int indx = 0;
-        if (len > 1) {
-            indx = StdRandom.uniform(0, len-1);
-        }
+        if (len > 1) indx = StdRandom.uniform(0, len-1);
         Item ret = queue[indx];
-        queue[indx] = queue[len-1];
+        queue[indx] = queue[len-1]; // put last valid item in the dequeued spot
+        queue[len-1] = null;
         len -= 1;
 
         if (space > len*2) {
-            space = space/2;
+            space = (space/2)+1;
             Item[] newq = (Item[]) new Object[space];
             for (int i = 0; i < len; i++) {
                 newq[i] = queue[i];
@@ -85,9 +84,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
     public Item sample()   {
         // return (but do not remove) a random item, as above
-        int indx = StdRandom.uniform(0, len-1);
-        
-        if (this.isEmpty()) { 
+        int indx = 0;
+        if (len > 1) indx = StdRandom.uniform(0, len-1);
+
+        if (isEmpty()) { 
             throw new NoSuchElementException("can not sample an empty queue");
         }
         return queue[indx];
@@ -161,7 +161,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         for (int i = 0; i < 100; i++) {
             rq.enqueue(i);
         }
-        for (int i = 0; i < 99; i++) {
+        for (int i = 0; i < 100; i++) {
             rq.dequeue();
             if (i % 10 == 0) {
                 StdOut.printf("queue size is %d \n", rq.size());

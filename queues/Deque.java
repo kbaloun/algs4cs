@@ -11,6 +11,7 @@ public class Deque<Item> implements Iterable<Item> {
     private int len = 0;
     private Node firstP;
     private Node lastP;
+    private Node sentinelP;
     private Deque d;
     //private static Item it;
     // nope: non-static class Item cannot be referenced from a static context
@@ -37,8 +38,13 @@ public class Deque<Item> implements Iterable<Item> {
         last.nxt = null;
         //len is still zero
         
+        Node sentinel = new Node();
+        sentinel.nxt = first;
+        sentinel.prv = last;
+        // this keeps a permanently open reference to both end nodes, to avoid null pointers
+        
         /*
-         I MUST understand this...
+         I MUST understand this... why different names in static definition than in the constructor?
          /Users/karel/algs4/queues/Deque.java:30:14: The local variable or parameter 'firstP' has the 
          same name as an instance variable. Use a different name.
          /Users/karel/algs4/queues/Deque.java:31:14: The local variable or parameter 'lastP' has the 
@@ -249,8 +255,15 @@ public class Deque<Item> implements Iterable<Item> {
         deq.addFirst(3);
         System.out.println(deq.removeLast());
         //deq.removeLast();
-        //deq.addFirst(5);
-        //deq.removeLast();
+        deq.addFirst(5);
+        deq.removeLast();
+        
+        deq.addFirst(0);
+        deq.addFirst(1);
+         deq.isEmpty();
+        deq.removeFirst();
+        deq.removeLast();
+
         System.out.println("done, phase 2");
         StdOut.printf("%d \n", deq.size());
         
