@@ -21,12 +21,12 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public RandomizedQueue()  {
         // construct an empty randomized queue
         space = 10;
-        Item[] queue = (Item[]) new Object[space];
+        queue = (Item[]) new Object[space];
         len = 0;
     }
     public boolean isEmpty() {
         // is the queue empty?
-        if (this.size() < 1) return false;
+        if (len < 1) return false;
         return true;
     }
     public int size()     {
@@ -47,17 +47,32 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         
         // add the item, to the end (or whereever easiest, doesn't matter where)
+        ////System.out.println(len);
+        ////System.out.println(space);
+        ////System.out.println(queue.toString());
         queue[len] = item;
         len += 1;
             
     }
     public Item dequeue()    {
+        
+        //throw a java.util.NoSuchElementException if the client attempts to sample 
+        //   or dequeue an item from an empty randomized queue
+        if (len < 1) { 
+            throw new java.util.NoSuchElementException("can not dequeue an empty queue");
+        }
+        
         // remove and return a random item
         // get a random item, return it, and fill in the hole from the end of the array
-        int indx = StdRandom.uniform(0, len-1);
+        ////System.out.println(len);
+        int indx = 0;
+        if (len > 1) {
+            indx = StdRandom.uniform(0, len-1);
+        }
         Item ret = queue[indx];
         queue[indx] = queue[len-1];
-        
+        len -= 1;
+
         if (space > len*2) {
             Item[] newq = (Item[]) new Object[space/2];
             for (int i = 0; i < len; i++) {
@@ -66,11 +81,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             queue = newq;
         }
         
-        //throw a java.util.NoSuchElementException if the client attempts to sample 
-        //   or dequeue an item from an empty randomized queue
-        if (this.isEmpty()) { 
-            throw new java.util.NoSuchElementException("can not dequeue an empty queue");
-        }
         return ret;
     }
     public Item sample()   {
@@ -141,13 +151,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         rq.enqueue("newer first");
         rq.enqueue("the last");
         rq.enqueue("the real end");
-        StdOut.printf("%d",rq.size());
-        rq.dequeue();
-        rq.dequeue();
-        rq.dequeue();
-        rq.dequeue();
+        //StdOut.printf("%d",rq.size());
+        System.out.println(rq.dequeue());
+        System.out.println(rq.dequeue());
+        System.out.println(rq.dequeue());
+        System.out.println(rq.dequeue());
         System.out.println("all done");
-        StdOut.printf("%d",rq.size());
+        //StdOut.printf("%d",rq.size());
     }
     
 
