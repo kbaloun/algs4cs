@@ -97,7 +97,8 @@ public class Deque<Item> implements Iterable<Item> {
         } else {
             if (lastP.item == null) {
                 // the first and last nodes exist, the last only is empty.
-                lastP.item = it;
+                lastP.item = firstP.item;
+                firstP.item = it;
             } else {
                 Node newSecond = new Node();
                 newSecond.prv = firstP;
@@ -259,6 +260,14 @@ public class Deque<Item> implements Iterable<Item> {
         
         Deque deq = new Deque();
         
+        System.out.println("start, phase 0");
+        deq.addFirst(0);
+        deq.addFirst(1);
+        System.out.println(deq.removeFirst()); // not    ==> 0
+        System.out.println(deq.removeFirst());
+        System.out.println("done, phase 0\n");
+        
+        /*
        
         deq.addFirst("was first");
         deq.addFirst("second");
@@ -274,10 +283,9 @@ public class Deque<Item> implements Iterable<Item> {
         System.out.println(deq.removeLast());
         System.out.println(deq.removeFirst());
         System.out.println(deq.removeLast());
-        System.out.println("done, phase 1");
+        System.out.println("done, phase 1\n");
         StdOut.printf("%d \n", deq.size());
         
-         /*
         
         deq.isEmpty();
         deq.isEmpty();
