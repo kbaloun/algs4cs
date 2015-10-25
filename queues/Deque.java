@@ -27,14 +27,14 @@ public class Deque<Item> implements Iterable<Item> {
         
         // initialize an empty first pointer as null?
         // TODO? d = new Deque();
-        Node firstP = new Node();
-        Node lastP = new Node();
-        firstP.nxt = lastP;
-        firstP.item = null;
-        firstP.prv = null;
-        lastP.prv = firstP;
-        lastP.item = null;
-        lastP.nxt = null;
+        Node first = new Node();
+        Node last = new Node();
+        first.nxt = last;
+        first.item = null;
+        first.prv = null;
+        last.prv = first;
+        last.item = null;
+        last.nxt = null;
         //len is still zero
         
         /*
@@ -76,16 +76,6 @@ public class Deque<Item> implements Iterable<Item> {
         if (numberOfNodes != len) return false;
 
         return true;
-    }
-     /**
-     * Returns a string representation of this stack.
-     * @return the sequence of items in the stack in LIFO order, separated by spaces
-     */
-    public String toString() {
-        StringBuilder s = new StringBuilder();
-        for (Item item : this)
-            s.append(item + " ");
-        return s.toString();
     }
     
     public boolean isEmpty()  {
@@ -141,7 +131,8 @@ public class Deque<Item> implements Iterable<Item> {
         Item item = firstP.item;
         if (firstP.nxt == lastP) {
             // if the next node is the last node, must just keep this node alive
-            firstP.item = null;
+            //firstP.item = null;
+            // i think decrementing len effectively nulls it out, and setting it to null makes a nullpointer exception
         } else {
             firstP = firstP.nxt;
         }
@@ -154,7 +145,16 @@ public class Deque<Item> implements Iterable<Item> {
         if (isEmpty()) throw new NoSuchElementException("sorry can't remove from an empty deque");
         
         // remove and return the item from the end
-        Item item = lastP.item;
+        Item item = null;
+        if (firstP.nxt == lastP) { 
+            // if this the last/only node, must return the item from first node.
+            item = firstP.item;
+        } else {
+            // this is the normal case
+            item = lastP.item;
+            lastP = lastP.prv;
+        }
+        /*
         if (lastP.prv == firstP) {
             // if the previous node is the first node, must just keep this node alive
             lastP.item = null;
@@ -163,6 +163,7 @@ public class Deque<Item> implements Iterable<Item> {
             lastP = lastP.prv;  
             //lastP.nxt = null; //nullpointerexception, is this necessary?
         }
+        */
         len -= 1;
         return item;
         
@@ -229,10 +230,6 @@ public class Deque<Item> implements Iterable<Item> {
         deq.addLast("the last");
         deq.addLast("the real end");       
         StdOut.printf("%d", deq.size());
-        // System.out.println(deq.toString());
-        // java.lang.NullPointerException
-        //   at Deque$ListIterator.next(Deque.java:191)
-        //   at Deque.toString(Deque.java:80)
 
         // Item it = deq.removeLast();
         // damnit non-static class Item cannot be referenced from a static context
@@ -240,6 +237,7 @@ public class Deque<Item> implements Iterable<Item> {
         deq.removeFirst();
         System.out.println(deq.removeLast());
         System.out.println(deq.removeFirst());
+        System.out.println(deq.removeLast());
         System.out.println("all done");
         StdOut.printf("%d", deq.size());
         

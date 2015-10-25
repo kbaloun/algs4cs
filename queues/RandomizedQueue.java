@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.StdOut;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -72,7 +73,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         len -= 1;
 
         if (space > len*2) {
-            Item[] newq = (Item[]) new Object[space/2];
+            space = space/2;
+            Item[] newq = (Item[]) new Object[space];
             for (int i = 0; i < len; i++) {
                 newq[i] = queue[i];
             }
@@ -154,8 +156,23 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         System.out.println(rq.dequeue());
         System.out.println(rq.dequeue());
         System.out.println(rq.dequeue());
-        System.out.println("all done");
+        System.out.println("done, phase 1");
         //StdOut.printf("%d",rq.size());
+        for (int i = 0; i < 100; i++) {
+            rq.enqueue(i);
+        }
+        for (int i = 0; i < 99; i++) {
+            rq.dequeue();
+            if (i % 10 == 0) {
+                StdOut.printf("queue size is %d \n", rq.size());
+            }
+            if (i > 97) {
+                StdOut.printf("smallest items are %d \n", i);
+            }
+        }
+        StdOut.printf("Size at end %d \n", rq.size());
+        System.out.println("done, phase 2");
+        
     }
     
 

@@ -18,7 +18,9 @@ public class Subset {
         
         //take a command-line integer k
         int subsetSize = Integer.parseInt(args[0]);
-        if (subsetSize <= 0) throw new IllegalArgumentException("need a positive integer as first argument for subset size");
+        if (subsetSize < 0) throw new IllegalArgumentException("need a positive integer as first argument for subset size");
+        //failed with java.lang.IllegalArgumentException: need a positive integer as first argument for subset size
+        // for % echo "A B C D E F G H I" | java Subset 0
         
         //puts them on a lovely new RandomizedQueue
         RandomizedQueue rq = new RandomizedQueue();
@@ -57,8 +59,6 @@ public class Subset {
         
         //Each item from the sequence can be printed out at most once.
         
-        //You may assume that 0 ² k ² N, where 
-        //  N is the number of string on standard input.
     }
 
 
