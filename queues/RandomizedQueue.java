@@ -113,14 +113,16 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         private Item[] copy = (Item[]) new Object[sz];
         //for (int k = 0; k < sz; k++) { copy[k] = queue[k]; }
         for (item a: queue) 
-        StdRandom.shuffle(copy);
+        
         
         //for (int i : N) {
          //   shuffledQueue[i] = queue[i];
         //}
         //shuffledQueue.StdRandom.shuffle();
                 */
-        
+        // do i need an Object array copy to .shuffle(Obj)
+        //Object[] copy = new Object[len];
+        //StdRandom.shuffle<Item>(query);
         private int cnt = 0; 
 
 
@@ -134,8 +136,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             
             if (!hasNext()) throw new NoSuchElementException("no more iterating -- all empty");
  
+
+            //while (queue[cnt] == null) { cnt += 1; }
             cnt += 1;
-            return queue[cnt];
+            return queue[cnt-1];
 
            
             //throw a java.util.NoSuchElementException if the client calls the next() method
