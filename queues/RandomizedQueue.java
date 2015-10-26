@@ -133,11 +133,24 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             throw new java.lang.UnsupportedOperationException("remove is not supported");
         }
         public Item next() {
-            
+            /*
+            public List<T> next() {
+                List<T> vals = new ArrayList<T>(lists.size());
+                for (int i=0; i<lists.size(); i++) {
+                */
+            /*
+            Object[] copy = new Object[len];
+            for (int i=0; i<len; i++) { 
+                if (queue[i] != null) copy[i] = queue[i]; 
+            }
+            StdRandom.shuffle(copy);
+                    
+            Item ret = (Item) copy[cnt];
+            return ret;
+            while (queue[cnt] == null) { cnt += 1; }
+            */
             if (!hasNext()) throw new NoSuchElementException("no more iterating -- all empty");
- 
-
-            //while (queue[cnt] == null) { cnt += 1; }
+                        
             cnt += 1;
             return queue[cnt-1];
 
