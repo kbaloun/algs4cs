@@ -226,7 +226,9 @@ public class Deque<Item> implements Iterable<Item> {
         private Node current = firstP;
        
         public boolean hasNext() {
-            return ((current.nxt).item != null);
+            //return current != null;
+            return (current.nxt != null && current != lastP);
+            //return ((current.nxt).item != null);
             //return current.item != null;
         }
         public void remove() {
@@ -294,7 +296,7 @@ public class Deque<Item> implements Iterable<Item> {
         System.out.println("done, phase 1\n");
         StdOut.printf("%d \n", deq.size());
         
-
+        System.out.println("start, phase 2");
         deq.isEmpty();
         deq.isEmpty();
         deq.isEmpty();
@@ -314,15 +316,18 @@ public class Deque<Item> implements Iterable<Item> {
         StdOut.printf("%d \n", deq.size());
 
         //while(!isEmpty()) { return removeFirst(); }
-        for (int i = 1; i < 1000; i++) deq.addFirst(i);
+        for (int i = 1; i <= 1000; i++) deq.addFirst(i);
+        StdOut.printf("%d \n", deq.size());
         int icnt = 0;
         for (Iterator j = deq.iterator(); j.hasNext(); ) {
             //System.out.println(deq.removeFirst());
-            deq.removeFirst();
+            //deq.removeFirst();
+            j.next();
             icnt++;
-            //if (i % 10 == 0) StdOut.printf("queue size is %d \n", rq.size());
+            if (icnt % 100 == 0) StdOut.printf("queue size is %d \n", deq.size());
         }
         StdOut.printf("Dequeued %d. Size at end %d \n", icnt, deq.size());
+        for (int i = 1; i <= 1000; i++) deq.removeFirst();
         System.out.println("done, phase 4\n");
         
         StdOut.printf("phase 5, size at start: %d \n", deq.size());
