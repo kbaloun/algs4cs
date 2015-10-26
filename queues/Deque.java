@@ -37,7 +37,7 @@ public class Deque<Item> implements Iterable<Item> {
         lastP.item = null;
         lastP.nxt = null;
         //len is still zero
-        
+
         sentinelP = new Node();
         sentinelP.nxt = firstP;
         sentinelP.prv = lastP;
@@ -221,27 +221,32 @@ public class Deque<Item> implements Iterable<Item> {
         // unit testing
         
         Deque deq = new Deque();
-        String it = "first";
-        deq.addFirst(it);
-
-        deq.addFirst("newer first");
-        it = "newer first";
-        deq.addFirst(it);
         
-        deq.addLast("the last");
-        deq.addLast("the real end");       
-        StdOut.printf("%d", deq.size());
+        System.out.println("start, phase 0");
+        deq.addFirst(0);
+        deq.addFirst(1);
+        System.out.println(deq.removeFirst()); // not    ==> 0
+        System.out.println(deq.removeFirst());
+        System.out.println("done, phase 0\n");
 
-        // Item it = deq.removeLast();
-        // damnit non-static class Item cannot be referenced from a static context
-        System.out.println(deq.removeLast());
-        deq.removeFirst();
+
+
+        deq.addFirst("was first");
+        deq.addFirst("second");
+        deq.addFirst("first first");
+        deq.addLast("the last");
+        deq.addLast("the real end");
+        StdOut.printf("phase 1 load is %d \n", deq.size());
+
         System.out.println(deq.removeLast());
         System.out.println(deq.removeFirst());
         System.out.println(deq.removeLast());
-        System.out.println("done, phase 1");
+        System.out.println(deq.removeFirst());
+        System.out.println(deq.removeLast());
+        System.out.println("done, phase 1\n");
         StdOut.printf("%d \n", deq.size());
         
+
         deq.isEmpty();
         deq.isEmpty();
         deq.isEmpty();
@@ -250,7 +255,7 @@ public class Deque<Item> implements Iterable<Item> {
         //deq.removeLast();
         deq.addFirst(5);
         deq.removeLast();
-        
+
         deq.addFirst(0);
         deq.addFirst(1);
          deq.isEmpty();
@@ -259,8 +264,19 @@ public class Deque<Item> implements Iterable<Item> {
 
         System.out.println("done, phase 2");
         StdOut.printf("%d \n", deq.size());
-        
+
         //while(!isEmpty()) { return removeFirst(); }
+        for (int i = 1; i < 10; i++) deq.addFirst(i);
+        int icnt = 0;
+        for (Iterator j = deq.iterator(); j.hasNext(); ) {
+            System.out.println(deq.removeFirst());
+            icnt++;
+            //if (i % 10 == 0) StdOut.printf("queue size is %d \n", rq.size());
+        }
+        StdOut.printf("Dequeued %d. Size at end %d \n", icnt, deq.size());
+        System.out.println("done, phase 4\n");
+
+
 
     }
 
