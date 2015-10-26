@@ -28,28 +28,20 @@ public class Deque<Item> implements Iterable<Item> {
         
         // initialize an empty first pointer as null?
         // TODO? d = new Deque();
-        Node first = new Node();
-        Node last = new Node();
-        first.nxt = last;
-        first.item = null;
-        first.prv = null;
-        last.prv = first;
-        last.item = null;
-        last.nxt = null;
+        firstP = new Node();
+        lastP = new Node();
+        sentinelP = new Node();
+        firstP.nxt = lastP;
+        firstP.item = null;
+        firstP.prv = sentinelP;
+        lastP.prv = firstP;
+        lastP.item = null;
+        lastP.nxt = sentinelP;
         //len is still zero
-        
-        Node sentinel = new Node();
-        sentinel.nxt = first;
-        sentinel.prv = last;
-        // this keeps a permanently open reference to both end nodes, to avoid null pointers
-        
-        /*
-         I MUST understand this... why different names in static definition than in the constructor?
-         /Users/karel/algs4/queues/Deque.java:30:14: The local variable or parameter 'firstP' has the 
-         same name as an instance variable. Use a different name.
-         /Users/karel/algs4/queues/Deque.java:31:14: The local variable or parameter 'lastP' has the 
-         same name as an instance variable. Use a different name.
-         */
+       
+         // this keeps a permanently open reference to both end nodes, to avoid null pointers
+        sentinelP.nxt = firstP;
+        sentinelP.prv = lastP;
         
         assert check();
         
@@ -135,7 +127,7 @@ public class Deque<Item> implements Iterable<Item> {
         
         // remove and return the item from the front
         Item item = firstP.item;
-        if (firstP.nxt == null || firstP.nxt == lastP) {
+        if (firstP.nxt == lastP) {
             // if the next node is the last node, must just keep this node alive
             //firstP.item = null;
             firstP.nxt = lastP;
@@ -153,7 +145,7 @@ public class Deque<Item> implements Iterable<Item> {
         
         // remove and return the item from the end
         Item item = null;
-        if (lastP.prv == null || lastP.prv == firstP) { 
+        if (lastP.prv == firstP) { 
             // if this the last/only node, must return the item from first node.
             item = firstP.item;
             lastP.prv = firstP;
