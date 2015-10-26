@@ -8,7 +8,7 @@ public class Deque<Item> implements Iterable<Item> {
     // Deque will be a linked list, since keeping order seems tightest with pointers
     // based on FIFO queue on p151
 
-    private int len = 0;
+    private int len;
     private Node firstP;
     private Node lastP;
     private Node sentinelP;
@@ -26,8 +26,7 @@ public class Deque<Item> implements Iterable<Item> {
     public Deque() {
         // construct an empty deque
         
-        // initialize an empty first pointer as null?
-        // TODO? d = new Deque();
+        len = 0;
         firstP = new Node();
         lastP = new Node();
         sentinelP = new Node();
@@ -90,12 +89,24 @@ public class Deque<Item> implements Iterable<Item> {
         //Throw a java.lang.NullPointerException if the client attempts to add a null item
         if (it == null) throw new java.lang.NullPointerException("no adding null items");
         
-        Node oldFirst = firstP; 
-        Node newFirst = new Node();
-        newFirst.item = it;
-        newFirst.nxt = oldFirst;
-        newFirst.prv = null; //just ensuring it is the new first node
-        firstP = newFirst;
+        if (firstP.item == null || lastP.item == null) {
+            if (firstP.item == null) {
+                // first spot is empty, it gets it.
+                firstP.item = it;
+            } else {
+                // first spot full, so 2nd spot is empty.  slide it over, then fill.
+                lastP.item = firstP.item;
+                firstP.item = it;
+            }
+        } else {
+            Node second = new Node();
+            second.item = firstP.item;
+            second.nxt = firstP.nxt;
+            second.prv = firstP;
+            (firstP.nxt).prv = second;
+            firstP.item = it;
+            firstP.nxt = second;
+        }
         len += 1;
         
         /*  breaks with NullPointerException
@@ -108,15 +119,39 @@ public class Deque<Item> implements Iterable<Item> {
         */
         
     }
-    public void addLast(Item item)  {
+    public void addLast(Item it)  {
         //Throw a java.lang.NullPointerException if the client attempts to add a null item
-        if (item == null) throw new java.lang.NullPointerException("no adding null items");
+        if (it == null) throw new java.lang.NullPointerException("no adding null items");
         
-        Node oldLast = lastP; 
-        lastP = new Node();
-        lastP.item = item;
-        lastP.prv = oldLast;
-        lastP.nxt = null; //just ensuring it is the new last node
+        if (firstP.item == null || lastP.item == null) {
+            if (lastP.item == null) {
+                if (firstP.item == null) {
+                    // both first and last empty, so only fill first
+                    firstP.item = it;
+                } else {
+                    // only last is empty, so fill it.
+                    lastP.item = it;
+                }
+            } else {
+                // last item is full
+                if (firstP.item == null) {
+                    // only first was empty, so shift to it and fill both
+                    firstP.item = lastP.item;
+                    lastP.item = it;
+                } else {
+                    //both first and last are full so should never see this
+                    System.out.println("bug in addLast(). go look.");
+                }
+            }
+        } else {
+            Node secondL = new Node();
+            secondL.item = lastP.item;
+            secondL.prv = lastP.prv;
+            secondL.nxt = lastP;
+            (lastP.prv).nxt = secondL;
+            lastP.item = it;
+            lastP.prv = secondL;
+        }
         len += 1;        
     }
     
@@ -126,14 +161,22 @@ public class Deque<Item> implements Iterable<Item> {
         if (isEmpty()) throw new NoSuchElementException("sorry can't remove from an empty deque");
         
         // remove and return the item from the front
-        Item item = firstP.item;
+        Item item = null;
         if (firstP.nxt == lastP) {
-            // if the next node is the last node, must just keep this node alive
-            //firstP.item = null;
-            firstP.nxt = lastP;
-            // i think decrementing len effectively nulls it out, and setting it to null makes a nullpointer exception
+            if (lastP.item == null) {
+                item = firstP.item;
+                firstP.item = null;
+            } else {
+                // if the last slot isn't empty, slide it to the first position
+                item = firstP.item;
+                firstP.item = lastP.item;
+                lastP.item = null;
+            }
         } else {
+            item = firstP.item;
+            firstP.item = null;
             firstP = firstP.nxt;
+            firstP.prv = sentinelP;
         }
         len -= 1;
         return item;
@@ -147,23 +190,25 @@ public class Deque<Item> implements Iterable<Item> {
         Item item = null;
         if (lastP.prv == firstP) { 
             // if this the last/only node, must return the item from first node.
-            item = firstP.item;
-            lastP.prv = firstP;
+            if (lastP.item == null) {
+                if (firstP.item == null) {
+                    // we must never be here, the array is empty!
+                    System.out.println("bug in removeLast(). go look.");
+                } else {
+                    item = firstP.item;
+                    firstP.item = null;
+                }
+            } else {
+                item = lastP.item;
+                lastP.item = null;
+            }
         } else {
-            // this is the normal case
+            // the normal longer case
             item = lastP.item;
-            lastP = lastP.prv;
-        }
-        /*
-        if (lastP.prv == firstP) {
-            // if the previous node is the first node, must just keep this node alive
             lastP.item = null;
-        } else {
-            //lastP.prv.nxt = null;  //nullpointerexception
-            lastP = lastP.prv;  
-            //lastP.nxt = null; //nullpointerexception, is this necessary?
+            lastP = lastP.prv;
+            lastP.nxt = sentinelP;
         }
-        */
         len -= 1;
         return item;
         
@@ -220,9 +265,11 @@ public class Deque<Item> implements Iterable<Item> {
         // unit testing
         
         Deque deq = new Deque();
-        
+
         System.out.println("start, phase 0");
-        deq.addFirst(0);
+        //deq.addFirst(0);
+        //deq.addFirst(1);
+        deq.addFirst(2);
         deq.addFirst(1);
         System.out.println(deq.removeFirst()); // not    ==> 0
         System.out.println(deq.removeFirst());
@@ -274,7 +321,22 @@ public class Deque<Item> implements Iterable<Item> {
         }
         StdOut.printf("Dequeued %d. Size at end %d \n", icnt, deq.size());
         System.out.println("done, phase 4\n");
-
+        
+        StdOut.printf("phase 5, size at start: %d \n", deq.size());
+         deq.addLast(0);
+         deq.isEmpty();
+         deq.addLast(2);
+         System.out.println(deq.removeFirst());  //  ==> 0
+         deq.addFirst(4);
+         deq.isEmpty();
+         deq.size();
+         deq.addFirst(7);
+         System.out.println(deq.removeLast());  //    ==> 2
+         deq.size();
+         deq.size();
+         System.out.println(deq.removeLast());  //   ==> 7
+         System.out.println(deq.removeLast());  
+         System.out.println("phase 5 done. should see: 0 2 4 , not 0 2 7 \n");
     }
 
 }
