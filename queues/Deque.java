@@ -227,7 +227,7 @@ public class Deque<Item> implements Iterable<Item> {
        
         public boolean hasNext() {
             //return current != null;
-            return (current.nxt != null && current != lastP.nxt);
+            return (current.item != null && current != lastP.nxt);
             //return ((current.nxt).item != null);
             //return current.item != null;
         }
@@ -345,6 +345,27 @@ public class Deque<Item> implements Iterable<Item> {
          System.out.println(deq.removeLast());  //   ==> 7
          System.out.println(deq.removeLast());  
          System.out.println("phase 5 done. should see: 0 2 4 , not 0 2 7 \n");
+         
+         StdOut.printf("phase 6, size at start: %d \n", deq.size());
+         deq.addFirst(4);
+         icnt = 0;
+         for (Iterator j = deq.iterator(); j.hasNext(); ) {
+            icnt++;
+            System.out.println(j.next());
+        }
+        StdOut.printf("Dequeued %d. Size at end %d \n", icnt, deq.size());
+        System.out.println("phase 6 done. should see just a single 1 entry iterated\n");
+        deq.removeFirst();
+        
+         StdOut.printf("phase 7, size at start: %d \n", deq.size());
+         icnt = 0;
+         for (Iterator j = deq.iterator(); j.hasNext(); ) {
+            icnt++;
+            System.out.println(j.next());
+        }
+        StdOut.printf("Dequeued %d. Size at end %d \n", icnt, deq.size());
+        System.out.println("phase 7 done. should see nothing iterated\n");
+         
     }
 
 }

@@ -40,7 +40,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             space = space*2;
             Item[] newq = (Item[]) new Object[space];
             for (int i = 0; i < len; i++) {
-                newq[i] = queue[i];
+                if (queue[i] != null) newq[i] = queue[i];
             }
             queue = newq;
         }
@@ -75,7 +75,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             space = (space/2)+1;
             Item[] newq = (Item[]) new Object[space];
             for (int i = 0; i < len; i++) {
-                newq[i] = queue[i];
+                if (queue[i] != null) newq[i] = queue[i];
             }
             queue = newq;
         }
@@ -125,7 +125,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
 
         public boolean hasNext() {
-            return queue[cnt+1] != null;
+            return queue[cnt] != null;
         }
         public void remove() {
             throw new java.lang.UnsupportedOperationException("remove is not supported");
@@ -169,6 +169,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         System.out.println(rq.dequeue());
         System.out.println("done, phase 1");
         //StdOut.printf("%d",rq.size());
+                */
         for (int i = 0; i < 100; i++) {
             rq.enqueue(i);
         }
@@ -183,7 +184,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         StdOut.printf("Size at end %d \n", rq.size());
         System.out.println("done, phase 2");
-        */
+
         for (int i = 1; i <= 1000; i++) {
             rq.enqueue(i);
         }
