@@ -227,7 +227,7 @@ public class Deque<Item> implements Iterable<Item> {
        
         public boolean hasNext() {
             //return current != null;
-            return (current.nxt != null && current != lastP);
+            return (current.nxt != null && current != lastP.nxt);
             //return ((current.nxt).item != null);
             //return current.item != null;
         }
@@ -240,7 +240,6 @@ public class Deque<Item> implements Iterable<Item> {
             //   in the iterator and there are no more items to return. 
             //if (isEmpty()) throw new java.util.NoSuchElementException("no more iterating -- all empty");
             if (!hasNext()) throw new NoSuchElementException("no more iterating -- all empty");
-
             an = current.item;
             current = current.nxt;
             return an;
@@ -322,8 +321,9 @@ public class Deque<Item> implements Iterable<Item> {
         for (Iterator j = deq.iterator(); j.hasNext(); ) {
             //System.out.println(deq.removeFirst());
             //deq.removeFirst();
-            j.next();
             icnt++;
+            j.next();
+
             if (icnt % 100 == 0) StdOut.printf("queue size is %d \n", deq.size());
         }
         StdOut.printf("Dequeued %d. Size at end %d \n", icnt, deq.size());

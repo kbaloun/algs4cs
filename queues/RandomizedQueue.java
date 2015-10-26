@@ -108,16 +108,24 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         
         // TODO make sure no null items are getting shuffled in
         //Item[] shuffledQueue = new Item[len];
-        //StdRandom.shuffle(this.queue);
+        /*
+        private int sz = queue.size();
+        private Item[] copy = (Item[]) new Object[sz];
+        //for (int k = 0; k < sz; k++) { copy[k] = queue[k]; }
+        for (item a: queue) 
+        StdRandom.shuffle(copy);
         
         //for (int i : N) {
          //   shuffledQueue[i] = queue[i];
         //}
         //shuffledQueue.StdRandom.shuffle();
+                */
+        
         private int cnt = 0; 
 
+
         public boolean hasNext() {
-            return queue[cnt] != null;
+            return queue[cnt+1] != null;
         }
         public void remove() {
             throw new java.lang.UnsupportedOperationException("remove is not supported");
@@ -148,6 +156,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         //Item[] a = (Item[]) new Object[1];
          // initialize an empty first pointer as null?
         RandomizedQueue rq = new RandomizedQueue();
+        
+        /*
         rq.enqueue("first");
         rq.enqueue("newer first");
         rq.enqueue("the last");
@@ -173,7 +183,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
         StdOut.printf("Size at end %d \n", rq.size());
         System.out.println("done, phase 2");
-        for (int i = 50; i < 150; i++) {
+        */
+        for (int i = 1; i <= 1000; i++) {
             rq.enqueue(i);
         }
         int icnt = 0;
