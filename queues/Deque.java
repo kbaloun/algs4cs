@@ -222,9 +222,11 @@ public class Deque<Item> implements Iterable<Item> {
     }
     private class ListIterator implements Iterator<Item> {
         // return an iterator over items in order from front to end
+        private Item an = null;
         private Node current = firstP;
+       
         public boolean hasNext() {
-            return len > 0;
+            return ((current.nxt).item != null);
             //return current.item != null;
         }
         public void remove() {
@@ -237,9 +239,9 @@ public class Deque<Item> implements Iterable<Item> {
             //if (isEmpty()) throw new java.util.NoSuchElementException("no more iterating -- all empty");
             if (!hasNext()) throw new NoSuchElementException("no more iterating -- all empty");
 
-            Item item = current.item;
+            an = current.item;
             current = current.nxt;
-            return item;
+            return an;
 
         }
             // avoid hanging references? how force garbage collection?
@@ -312,10 +314,11 @@ public class Deque<Item> implements Iterable<Item> {
         StdOut.printf("%d \n", deq.size());
 
         //while(!isEmpty()) { return removeFirst(); }
-        for (int i = 1; i < 10; i++) deq.addFirst(i);
+        for (int i = 1; i < 1000; i++) deq.addFirst(i);
         int icnt = 0;
         for (Iterator j = deq.iterator(); j.hasNext(); ) {
-            System.out.println(deq.removeFirst());
+            //System.out.println(deq.removeFirst());
+            deq.removeFirst();
             icnt++;
             //if (i % 10 == 0) StdOut.printf("queue size is %d \n", rq.size());
         }
