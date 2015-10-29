@@ -8,26 +8,27 @@
  *************************************************************************/
 
 public class FastCollinearPoints {
-    private final Point p;   // one endpoint of this line segment
-    private final Point q;   // the other endpoint of this line segment
+    private int nos = 0;
+    private int maxNos = 100;
+    private LineSegment[] lines = new LineSegment[maxNos];
 
     /**
-     * Initializes a new line segment.
+     * Initializes a new CollinearPoints computer
      *
-     * @param  p one endpoint
-     * @param  q the other endpoint
-     * @throws NullPointerException if either <tt>p</tt> or <tt>q</tt>
-     *         is <tt>null</tt>
+     * @param  Point[] array of point objects
+     * @param  first argument in main is the data file containing points
+     * @throws NullPointerException when either the argument to the constructor is null or if any point in the array is null
      */
     public FastCollinearPoints(Point[] points)  {
         // finds all line segments containing 4 or more points
+        // TODO Arrays.sort(points, Point.BY_SLOPE);
     }
     
     public           int numberOfSegments()   {
-        // the number of line segments
+        return nos;
     }
     public LineSegment[] segments()   {
-        // the line segments
+        return lines;
     }
 }
 
