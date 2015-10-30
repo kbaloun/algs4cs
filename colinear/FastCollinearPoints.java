@@ -9,13 +9,11 @@
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
-import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints {
     private int nos = 0;
     private int maxNos = 100;
-    private int maxPs = 10000;
     private LineSegment[] lines = new LineSegment[maxNos];
 
     /**
@@ -50,7 +48,7 @@ public class FastCollinearPoints {
         for (int i = 0; i < nos; i++) {
             if (lines[i] != null) tmplines[i] = lines[i];
         }
-        LineSegment[] lines = new LineSegment[nos];
+        lines = new LineSegment[nos];
         for (int i = 0; i < nos; i++) {
             if (tmplines[i] != null) lines[i] = tmplines[i];
         }
@@ -91,9 +89,13 @@ public class FastCollinearPoints {
     
     /*
 
-Corner cases. Throw a java.lang.NullPointerException either the argument to the constructor is null or if any point in the array is null. Throw a java.lang.IllegalArgumentException if the argument to the constructor contains a repeated point.
+Corner cases. Throw a java.lang.NullPointerException either the argument to the constructor is null
+or if any point in the array is null. 
+Throw a java.lang.IllegalArgumentException if the argument to the constructor contains a repeated point.
 
-Performance requirement. The order of growth of the running time of your program should be N2 log N in the worst case and it should use space proportional to N plus the number of line segments returned. FastCollinearPoints should work properly even if the input has 5 or more collinear points. 
+Performance requirement. The order of growth of the running time of your program should be N2 log N in the worst case 
+and it should use space proportional to N plus the number of line segments returned. 
+FastCollinearPoints should work properly even if the input has 5 or more collinear points. 
 
 */
     

@@ -19,8 +19,7 @@ public class Point implements Comparable<Point> {
     private double ydiff = 0;
     private double xdiff = 0;
     private double slope = 0;
-    
-    public static final Comparator<Point> BY_SLOPE = new slopeOrder();
+
 
     /**
      * Initializes a new point.
@@ -121,11 +120,19 @@ public class Point implements Comparable<Point> {
      *
      * @return the Comparator that defines this ordering on points
      */
-    public static class slopeOrder implements Comparator<Point> {
-        public int compare (Point p1, Point p2) {
+        //public static final Comparator<Point> BY_SLOPE = new slopeOrder();
+    //public Comparator<Point> slopeOrder = new slopeOrder();
+    //public Comparator<Point> slopeOrder() { 
+    public java.util.Comparator<Point> slopeOrder() {
+        return new SlopeOrder(); 
+    }
+    
+    private class SlopeOrder implements Comparator<Point> {
+        public int compare(Point p1, Point p2) {
             return p1.compareTo(p2);
         }
     }
+
 
 
     /**
