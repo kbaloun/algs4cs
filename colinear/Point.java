@@ -66,32 +66,29 @@ public class Point implements Comparable<Point> {
      */
     public double slopeTo(Point that) {
         
-        ydiff = (this.y - that.y);
-        xdiff = (this.x - that.x);
+        ydiff = (that.y - this.y);
+        xdiff = (that.x - this.x);
         
         if (ydiff == 0 || xdiff == 0) {
             if (ydiff == 0) {
                 if (xdiff == 0) {
-                    // what if the points are co-located/collided and in the same position? 
+                    // what if the points are co-located/collided and in the same position?
+                    // "degenerate points" get neg infinity.
+                    slope = Double.NEGATIVE_INFINITY;
                 }
-                else slope = 0;
+                else slope = 0; // horizontal line
             }
             if (xdiff == 0) {
-                if (ydiff > 0) slope = Double.POSITIVE_INFINITY;
-                else slope = Double.NEGATIVE_INFINITY;
+                // vertical lines
+                if (ydiff != 0) slope = Double.POSITIVE_INFINITY;
             }
-            slope = ydiff/xdiff;
         }
+        else slope = (ydiff/xdiff);
         return slope;
-        
-
-                
-        // consider a variety of corner cases, including horizontal, vertical, and degenerate line segments. 
 
        /* With integers, this produces a run-time exception. With floating-point numbers, 
         *      1.0/0.0 is positive infinity and -1.0/0.0 is negative infinity. You may also use the constants 
-        *      Double.POSITIVE_INFINITY and Double.NEGATIVE_INFINITY. */
-        
+        *      Double.POSITIVE_INFINITY and Double.NEGATIVE_INFINITY. */      
     }
 
     /**

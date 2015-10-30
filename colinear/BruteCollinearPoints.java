@@ -37,20 +37,33 @@ public class BruteCollinearPoints {
         for (Point p : points) {
           if (p == null) throw new NullPointerException("null point within input file");
           numP += 1;   
-          System.out.println(p.toString());
+          //System.out.println(p.toString());
           //if (pStr[p.toString()] == 1) throw new IllegalArgumentException("a duplicate point is loaded");
           //else pStr[p.toString()] = 1;
         }
-        System.out.println(numP);
+        //System.out.println(numP);
         
+        // compare each point only with forward points, so that no duplicate orders or permutations.
         for (int i = 0; i < numP; i++) {
-            for (int j = 1; j < numP; j++) {
-                for (int k = 2; k < numP; k++) {
-                    for (int m = 2; m < numP; m++) {
+            for (int j = i; j < numP; j++) {
+                for (int k = j; k < numP; k++) {
+                    for (int m = k; m < numP; m++) {
+                        // skip self referential comparisons
+                        if (i == j || i == k || i == m) continue;
+                        
+                        // find collinear points
                         if ((points[i].slopeTo(points[j]) == (points[j].slopeTo(points[k])) &&
-                                points[j].slopeTo(points[k]) == (points[k].slopeTo(points[m])))) {
-                            lines[nos] = new LineSegment(points[i],points[m]);
-                            nos++;
+                             points[j].slopeTo(points[k]) == (points[k].slopeTo(points[m])))) {
+                            if (points[i].slopeTo(points[m]) == (points[j].slopeTo(points[m])) && 
+                                points[i].slopeTo(points[k]) == (points[j].slopeTo(points[m]))) {
+                                lines[nos] = new LineSegment(points[i],points[m]);
+                                nos++;
+                                //double s1 = points[i].slopeTo(points[j]);
+                                //double s2 = points[j].slopeTo(points[k]);
+                                //double s3 = points[j].slopeTo(points[m]);
+                                //System.out.println(s1 + " " + s2 + " " +s3 + " " + points[i].toString() + " " +
+                                //                   points[j].toString() + " " + points[k].toString() + " " + points[m].toString());
+                            }
                         }
                     }
                 }
@@ -80,8 +93,8 @@ public class BruteCollinearPoints {
         }
         
     */
-        System.out.println("done");    
-        System.out.println(nos);
+        //System.out.println("done");    
+        //System.out.println(nos);
 
     }
     
