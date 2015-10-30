@@ -17,7 +17,10 @@ public class BruteCollinearPoints {
 
     private int nos = 0;
     private int maxNos = 100;
+    private int maxPs = 1000;
     private LineSegment[] lines = new LineSegment[maxNos];
+    private String[] pStr = new String[1000];
+    //private LineSegment[] lines = new LineSegment[1];
 
     /**
      * Initializes a new CollinearPoints computer
@@ -28,9 +31,58 @@ public class BruteCollinearPoints {
      */
     public BruteCollinearPoints(Point[] points)  {
         // finds all line segments containing 4 points
+        
+        if (points == null) throw new NullPointerException("null points argument");
+        int numP = 0;
         for (Point p : points) {
-            System.out.println("looking at point");
+          if (p == null) throw new NullPointerException("null point within input file");
+          numP += 1;   
+          System.out.println(p.toString());
+          //if (pStr[p.toString()] == 1) throw new IllegalArgumentException("a duplicate point is loaded");
+          //else pStr[p.toString()] = 1;
         }
+        System.out.println(numP);
+        
+        for (int i = 0; i < numP; i++) {
+            for (int j = 1; j < numP; j++) {
+                for (int k = 2; k < numP; k++) {
+                    for (int m = 2; m < numP; m++) {
+                        if ((points[i].slopeTo(points[j]) == (points[j].slopeTo(points[k])) &&
+                                points[j].slopeTo(points[k]) == (points[k].slopeTo(points[m])))) {
+                            lines[nos] = new LineSegment(points[i],points[m]);
+                            nos++;
+                        }
+                    }
+                }
+            }
+        }
+
+
+        //lines[0] = new LineSegment(points[2],points[3]);
+        //lines[1] = new LineSegment(points[3],points[4]);
+        //nos += 2;
+        
+        LineSegment[] tmplines = new LineSegment[nos];
+        for (int i = 0; i < nos; i++) {
+            if (lines[i] != null) tmplines[i] = lines[i];
+        }
+        LineSegment[] lines = new LineSegment[nos];
+        for (int i = 0; i < nos; i++) {
+            if (tmplines[i] != null) lines[i] = tmplines[i];
+        }
+        /*
+        //for (Point p : points) {
+            for (int i = 0; i < numP-2; i++) {
+                
+                lines[i] = new LineSegment(points[i],points[i+1]);
+                numL++;
+            }     
+        }
+        
+    */
+        System.out.println("done");    
+        System.out.println(nos);
+
     }
     
     public   int numberOfSegments()  {
@@ -40,6 +92,22 @@ public class BruteCollinearPoints {
     
     public LineSegment[] segments()   {
         // the line segments
+   
+        /*
+        for (LineSegment l : lines) {
+            if (l != null) System.out.println(l.toString());
+            //if (l.toString() == null) System.out.println("null string");
+            System.out.println("null string?");
+        }
+        */
+        LineSegment[] tmplines = new LineSegment[nos];
+        for (int i = 0; i < nos; i++) {
+            if (lines[i] != null) tmplines[i] = lines[i];
+        }
+        LineSegment[] lines = new LineSegment[nos];
+        for (int i = 0; i < nos; i++) {
+            if (tmplines[i] != null) lines[i] = tmplines[i];
+        }
         return lines;
     }
     
