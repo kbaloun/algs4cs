@@ -17,9 +17,9 @@ public class BruteCollinearPoints {
 
     private int nos = 0;
     private int maxNos = 100;
-    private int maxPs = 1000;
+    private int maxPs = 10000;
     private LineSegment[] lines = new LineSegment[maxNos];
-    private String[] pStr = new String[1000];
+    //private String[] pStr = new String[1000];
     //private LineSegment[] lines = new LineSegment[1];
 
     /**
@@ -58,11 +58,13 @@ public class BruteCollinearPoints {
                                 points[i].slopeTo(points[k]) == (points[j].slopeTo(points[m]))) {
                                 lines[nos] = new LineSegment(points[i],points[m]);
                                 nos++;
-                                //double s1 = points[i].slopeTo(points[j]);
-                                //double s2 = points[j].slopeTo(points[k]);
-                                //double s3 = points[j].slopeTo(points[m]);
-                                //System.out.println(s1 + " " + s2 + " " +s3 + " " + points[i].toString() + " " +
-                                //                   points[j].toString() + " " + points[k].toString() + " " + points[m].toString());
+
+                                double s1 = points[i].slopeTo(points[j]);
+                                double s2 = points[j].slopeTo(points[k]);
+                                double s3 = points[j].slopeTo(points[m]);
+                                System.out.println(s1 + " " + s2 + " " +s3 + " " + points[i].toString() + " " +
+                                                   points[j].toString() + " " + points[k].toString() + " " + points[m].toString());
+
                             }
                         }
                     }
