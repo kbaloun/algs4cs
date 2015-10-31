@@ -10,6 +10,7 @@
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
+import java.util.Arrays;
 
 public class FastCollinearPoints {
     private int nos = 0;
@@ -33,13 +34,30 @@ public class FastCollinearPoints {
           if (p == null) throw new NullPointerException("null point within input file");
           numP += 1;   
           
+        }
+        
+        // check for dups
+        for (int i = 0; i < numP; i++) {
+            for (int j = 0; j < numP; j++) {
+                if (i == j) continue;
+                if (points[i] == null || points[j] == null) continue;
+                if (points[i].compareTo(points[j]) == 0) throw new IllegalArgumentException("dup point");
+            }
+        }
+          
+        for (int i = 0; i < numP; i++) {
+            
           //p.compareTo(
+          //Point[] pts = points[i].slopeOrder<points[i]>;
+          //Arrays.sort(points, new slopeOrder); //points[i].slopeOrder<points[i]>);
+          //Arrays.sort(points, slopeOrder);
+        }
           //Arrays.sort(points, SlopeOrder);
                       
           //System.out.println(p.toString());
           //if (pStr[p.toString()] == 1) throw new IllegalArgumentException("a duplicate point is loaded");
           //else pStr[p.toString()] = 1;
-        }
+
     }
     
     public int numberOfSegments()   {

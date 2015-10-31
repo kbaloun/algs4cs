@@ -16,10 +16,17 @@ import edu.princeton.cs.algs4.StdOut;
 public class BruteCollinearPoints {
 
     private int nos = 0;
-    private int maxNos = 100;
+    // "lines" should be "static", i believe because it needs to be immutable.
+    // Test 2a: Points from a file with horizontal line segments
+     //*  filename = horizontal5.txt
+     // java.lang.ArrayIndexOutOfBoundsException: 2
+     // BruteCollinearPoints.<init>(BruteCollinearPoints.java:166)
+    //private static int maxNos = 1000;
+    //private static LineSegment[] lines = new LineSegment[maxNos];
+    private int maxNos = 300;
     private LineSegment[] lines = new LineSegment[maxNos];
-    private int maxPs = 1000;
-    private String[] pStr = new String[maxPs];
+    private int maxPs = 10001;
+    private int[] dups = new int[maxPs];
     //private LineSegment[] lines = new LineSegment[1];
 
     /**
@@ -41,6 +48,14 @@ public class BruteCollinearPoints {
 
         }
         //System.out.println(numP);
+        // check for dups
+        for (int i = 0; i < numP; i++) {
+            for (int j = 0; j < numP; j++) {
+                if (i == j) continue;
+                if (points[i] == null || points[j] == null) continue;
+                if (points[i].compareTo(points[j]) == 0) throw new IllegalArgumentException("dup point");
+            }
+        }
         
         // compare each point only with forward points, so that no duplicate orders or permutations.
         int pos = 0;
@@ -56,14 +71,6 @@ public class BruteCollinearPoints {
                              points[j].slopeTo(points[k]) == (points[k].slopeTo(points[m])))) {
                             if (points[i].slopeTo(points[m]) == (points[j].slopeTo(points[m])) && 
                                 points[i].slopeTo(points[k]) == (points[j].slopeTo(points[m]))) {
-                                
-                                //System.out.println(points[i].toString());
-                                for (int z = 0; z < maxPs; z++) {
-                                     if (pStr[z] == points[i].toString()) throw new IllegalArgumentException("dup point");
-                                     if (pStr[z] == null) break;
-                                }
-                                pStr[pos] = points[i].toString();
-                                pos++;
                                 
                                 
                                 // find first and last end point, from the set of 4.
