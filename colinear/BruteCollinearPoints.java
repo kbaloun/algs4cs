@@ -18,8 +18,8 @@ public class BruteCollinearPoints {
     private int nos = 0;
     private int maxNos = 100;
     private LineSegment[] lines = new LineSegment[maxNos];
-    //private int maxPs = 10000;
-    //private String[] pStr = new String[1000];
+    private int maxPs = 1000;
+    private String[] pStr = new String[maxPs];
     //private LineSegment[] lines = new LineSegment[1];
 
     /**
@@ -34,16 +34,16 @@ public class BruteCollinearPoints {
         
         if (points == null) throw new NullPointerException("null points argument");
         int numP = 0;
+        int ps = 0;
         for (Point p : points) {
           if (p == null) throw new NullPointerException("null point within input file");
           numP += 1;   
-          //System.out.println(p.toString());
-          //TODO if (pStr[p.toString()] == 1) throw new IllegalArgumentException("a duplicate point is loaded");
-          //else pStr[p.toString()] = 1;
+
         }
         //System.out.println(numP);
         
         // compare each point only with forward points, so that no duplicate orders or permutations.
+        int pos = 0;
         for (int i = 0; i < numP; i++) {
             for (int j = i; j < numP; j++) {
                 for (int k = j; k < numP; k++) {
@@ -57,50 +57,109 @@ public class BruteCollinearPoints {
                             if (points[i].slopeTo(points[m]) == (points[j].slopeTo(points[m])) && 
                                 points[i].slopeTo(points[k]) == (points[j].slopeTo(points[m]))) {
                                 
-                                /*
-                                // find min and max points of the 4 set
-                                int[] score = new int[4];
-                                score[i] = 0;
-                                score[j] = 0;
-                                score[k] = 0;
-                                score[m] = 0;
-                                if ((points[i].compareTo(points[j])) > 0) { 
-                                    score[j] += 1; 
-                                    if (points[j].compareTo(points[k]) > 0) {
-                                        score[k] += 2;
-                                        if ((points[k].compareTo(points[m])) > 0) {
-                                            score[m] += 3;
+                                //System.out.println(points[i].toString());
+                                for (int z = 0; z < maxPs; z++) {
+                                     if (pStr[z] == points[i].toString()) throw new IllegalArgumentException("dup point");
+                                     if (pStr[z] == null) break;
+                                }
+                                pStr[pos] = points[i].toString();
+                                pos++;
+                                
+                                
+                                // find first and last end point, from the set of 4.
+                                // this is terrible spaghetti code :-(
+                                
+                                Point biggest = null;
+                                Point smallest = null;
+                                boolean mIsBiggest = false;
+                                boolean iIsSmallest = false;
+                                boolean jIsSmallest = false;
+                                if (((points[m].compareTo(points[i])) > 0) && ((points[m].compareTo(points[j])) > 0) &&
+                                    ((points[m].compareTo(points[k])) > 0)) { mIsBiggest = true; }
+                                if (((points[i].compareTo(points[j])) < 0) && ((points[i].compareTo(points[k])) < 0) &&
+                                    ((points[i].compareTo(points[m])) < 0)) { iIsSmallest = true; }
+                                if (((points[j].compareTo(points[i])) < 0) && ((points[j].compareTo(points[k])) < 0) &&
+                                    ((points[j].compareTo(points[m])) < 0)) { jIsSmallest = true; }
+                                
+                                    
+                                if ((points[j].compareTo(points[i])) > 0) {
+                                    // j is bigger than i
+                                    if ((points[k].compareTo(points[j])) > 0) {
+                                        // k is bigger than j & i
+                                        if (mIsBiggest && iIsSmallest) {
+                                            // m is biggest!  and i is smallest
+                                            biggest = points[m];
+                                            smallest = points[i];
+                                        } else if (iIsSmallest) {
+                                            // k is biggest!  (and i or m is smallest)
+                                            biggest = points[k];
+                                            smallest = points[i];
                                         } else {
-                                            score[k] += 1;
+                                            //m is smallest
+                                            biggest = points[k];
+                                            smallest = points[m];
                                         }
                                     } else {
-                                        score[j] += 1;
-                                        if ((points[j].compareTo(points[m])) > 0) score[m] += 1;
-                                        else score[j] += 1;
+                                        // j is bigger than k & i
+                                        if (mIsBiggest && iIsSmallest) {
+                                            // m is biggest!  and i is smallest
+                                            biggest = points[m];
+                                            smallest = points[i];
+                                        } else if (iIsSmallest) {
+                                            // j is biggest (and i or m are smallest)
+                                            biggest = points[j];
+                                            smallest = points[i];
+                                        } else {
+                                            biggest = points[j];
+                                            smallest = points[m];
+                                        }
                                     }
                                 } else {
-                                    iScore += 1;
-                                    if (points[i].compareTo(points[k]) > 0) {  
-                                        score[j] += 1;
-                                        if (points[i].compareTo(points[k]) > 0) {
-                                            score[k] += 1;
+                                    // i is bigger than j
+                                    if ((points[k].compareTo(points[i])) > 0) {
+                                        // k is bigger than j & i
+                                        if (mIsBiggest && jIsSmallest) {
+                                            // m is biggest!  and j is smallest
+                                            biggest = points[m];
+                                            smallest = points[j];
+                                        } else if (jIsSmallest) {
+                                            // k is biggest!  
+                                            biggest = points[k];
+                                            smallest = points[j];
                                         } else {
-                                            score[i] += 1;
+                                            //m is smallest
+                                            biggest = points[k];
+                                            smallest = points[m];
                                         }
-                                    } else score[i] += 1;
+                                    } else {
+                                        // i is bigger than j & k
+                                        if (mIsBiggest && jIsSmallest) {
+                                            // m is biggest!  and j is smallest
+                                            biggest = points[m];
+                                            smallest = points[j];
+                                        } else if (jIsSmallest) {
+                                            // i is biggest!  (and i or m is still smallest)
+                                            biggest = points[i];
+                                            smallest = points[j];
+                                        } else {
+                                            //m is smallest
+                                            biggest = points[i];
+                                            smallest = points[m];
+                                        }
+                                    }
                                 }
-                                */
 
-                                
-                                lines[nos] = new LineSegment(points[i], points[m]);
+                                lines[nos] = new LineSegment(smallest, biggest);
                                 nos++;
+                                //System.out.println(smallest + " < " + biggest);
+                                
                                 /*
                                 double s1 = points[i].slopeTo(points[j]);
                                 double s2 = points[j].slopeTo(points[k]);
                                 double s3 = points[j].slopeTo(points[m]);
                                 System.out.println(s1 + " " + s2 + " " +s3 + " " + points[i].toString() + " " +
                                     points[j].toString() + " " + points[k].toString() + " " + points[m].toString());
-                                    */
+                                */
 
                             }
                         }
@@ -109,10 +168,6 @@ public class BruteCollinearPoints {
             }
         }
 
-
-        //lines[0] = new LineSegment(points[2],points[3]);
-        //lines[1] = new LineSegment(points[3],points[4]);
-        //nos += 2;
         
         LineSegment[] tmplines = new LineSegment[nos];
         for (int i = 0; i < nos; i++) {
@@ -122,18 +177,6 @@ public class BruteCollinearPoints {
         for (int i = 0; i < nos; i++) {
             if (tmplines[i] != null) lines[i] = tmplines[i];
         }
-        /*
-        //for (Point p : points) {
-            for (int i = 0; i < numP-2; i++) {
-                
-                lines[i] = new LineSegment(points[i],points[i+1]);
-                numL++;
-            }     
-        }
-        
-    */
-        //System.out.println("done");    
-        //System.out.println(nos);
 
     }
     
