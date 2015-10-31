@@ -106,7 +106,7 @@ public class Point implements Comparable<Point> {
         int ret = 0;
         if (this.y > that.y) ret = 1;
         else if (this.y < that.y) ret = -1;
-        else if (this.y == that.y) {
+        if (this.y == that.y) {
             if (this.x > that.x) ret = 1;
             else if (this.x < that.x) ret = -1;
             //else if (this.x == that.x) ret = 0;
@@ -123,13 +123,19 @@ public class Point implements Comparable<Point> {
         //public static final Comparator<Point> BY_SLOPE = new slopeOrder();
     //public Comparator<Point> slopeOrder = new slopeOrder();
     //public Comparator<Point> slopeOrder() { 
-    public java.util.Comparator<Point> slopeOrder() {
+    public Comparator<Point> slopeOrder() {
         return new SlopeOrder(); 
     }
     
     private class SlopeOrder implements Comparator<Point> {
         public int compare(Point p1, Point p2) {
-            return p1.compareTo(p2);
+            //from the invoking point (x0, y0), the point (x1, y1) is less than the point (x2, y2) 
+            //if and only if the slope (y1 ? y0) / (x1 ? x0) is less than the slope (y2 ? y0) / (x2 ? x0).
+        if (p1 == null || p2 == null) throw new NullPointerException("can only compare not null points");
+        int ret = 0;
+        if (compareTo(p1) < compareTo(p2)) ret = 1;
+        else if (compareTo(p1) > compareTo(p2)) ret = -1;
+        return ret;
         }
     }
 

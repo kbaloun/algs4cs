@@ -38,7 +38,7 @@ public class BruteCollinearPoints {
           if (p == null) throw new NullPointerException("null point within input file");
           numP += 1;   
           //System.out.println(p.toString());
-          //if (pStr[p.toString()] == 1) throw new IllegalArgumentException("a duplicate point is loaded");
+          //TODO if (pStr[p.toString()] == 1) throw new IllegalArgumentException("a duplicate point is loaded");
           //else pStr[p.toString()] = 1;
         }
         //System.out.println(numP);
