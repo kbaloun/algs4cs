@@ -74,12 +74,15 @@ public class BruteCollinearPoints {
                                 boolean mIsBiggest = false;
                                 boolean iIsSmallest = false;
                                 boolean jIsSmallest = false;
+                                boolean kIsSmallest = false;
                                 if (((points[m].compareTo(points[i])) > 0) && ((points[m].compareTo(points[j])) > 0) &&
                                     ((points[m].compareTo(points[k])) > 0)) { mIsBiggest = true; }
                                 if (((points[i].compareTo(points[j])) < 0) && ((points[i].compareTo(points[k])) < 0) &&
                                     ((points[i].compareTo(points[m])) < 0)) { iIsSmallest = true; }
                                 if (((points[j].compareTo(points[i])) < 0) && ((points[j].compareTo(points[k])) < 0) &&
                                     ((points[j].compareTo(points[m])) < 0)) { jIsSmallest = true; }
+                                if (((points[k].compareTo(points[i])) < 0) && ((points[k].compareTo(points[j])) < 0) &&
+                                    ((points[k].compareTo(points[m])) < 0)) { kIsSmallest = true; }
                                 
                                     
                                 if ((points[j].compareTo(points[i])) > 0) {
@@ -109,6 +112,9 @@ public class BruteCollinearPoints {
                                             // j is biggest (and i or m are smallest)
                                             biggest = points[j];
                                             smallest = points[i];
+                                        } else if (kIsSmallest) {
+                                            biggest = points[j];
+                                            smallest = points[k];
                                         } else {
                                             biggest = points[j];
                                             smallest = points[m];
@@ -141,6 +147,9 @@ public class BruteCollinearPoints {
                                             // i is biggest!  (and i or m is still smallest)
                                             biggest = points[i];
                                             smallest = points[j];
+                                        } else if (kIsSmallest) {
+                                            biggest = points[i];
+                                            smallest = points[k];
                                         } else {
                                             //m is smallest
                                             biggest = points[i];
@@ -151,15 +160,15 @@ public class BruteCollinearPoints {
 
                                 lines[nos] = new LineSegment(smallest, biggest);
                                 nos++;
-                                //System.out.println(smallest + " < " + biggest);
-                                
                                 /*
+                                System.out.println(smallest + " < " + biggest);
+                                
                                 double s1 = points[i].slopeTo(points[j]);
                                 double s2 = points[j].slopeTo(points[k]);
                                 double s3 = points[j].slopeTo(points[m]);
                                 System.out.println(s1 + " " + s2 + " " +s3 + " " + points[i].toString() + " " +
                                     points[j].toString() + " " + points[k].toString() + " " + points[m].toString());
-                                */
+                                */    
 
                             }
                         }
