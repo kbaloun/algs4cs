@@ -133,8 +133,8 @@ public class Point implements Comparable<Point> {
             //if and only if the slope (y1 ? y0) / (x1 ? x0) is less than the slope (y2 ? y0) / (x2 ? x0).
         if (p1 == null || p2 == null) throw new NullPointerException("can only compare not null points");
         int ret = 0;
-        if (compareTo(p1) < compareTo(p2)) ret = 1;
-        else if (compareTo(p1) > compareTo(p2)) ret = -1;
+        if (slopeTo(p1) < slopeTo(p2)) ret = -1;
+        else if (slopeTo(p1) > slopeTo(p2)) ret = 1;
         return ret;
         }
     }

@@ -32,6 +32,10 @@ public class FastCollinearPoints {
         for (Point p : points) {
           if (p == null) throw new NullPointerException("null point within input file");
           numP += 1;   
+          
+          //p.compareTo(
+          //Arrays.sort(points, SlopeOrder);
+                      
           //System.out.println(p.toString());
           //if (pStr[p.toString()] == 1) throw new IllegalArgumentException("a duplicate point is loaded");
           //else pStr[p.toString()] = 1;
