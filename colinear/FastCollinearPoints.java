@@ -15,6 +15,7 @@ import java.util.Arrays;
 public class FastCollinearPoints {
     private int nos = 0;
     private final int maxNos = 10001;
+    private final int maxPts = 100;
     private final LineSegment[] tmplines = new LineSegment[maxNos];
     private boolean debug = false;
 
@@ -52,8 +53,8 @@ public class FastCollinearPoints {
         
         Point[] slopePts = new Point[numP];
         for (int i = 0; i < numP; i++) { slopePts[i] = points[i]; }
-        Point[] donePts = new Point[numP*2]; // to avoid duplicate entries.  can be smaller?
-        double[] doneSlopes = new double[numP*2];
+        Point[] donePts = new Point[numP*4]; // to avoid duplicate entries.  can be smaller?
+        double[] doneSlopes = new double[numP*4];
         int dos = 0;
 
         
@@ -67,8 +68,8 @@ public class FastCollinearPoints {
 
             int dupCnt = 0;
             for (int j = 0; j < numP-1; j++) { 
-                            Point[] foundPts = new Point[100];
-            int fos = 0;
+                Point[] foundPts = new Point[maxPts];
+                int fos = 0;
                 if (debug) System.out.println("s" + j + " " + slopePts[j] + " " + points[i].slopeTo(slopePts[j]));
                 // check for duplicate points
                 if (points[i].compareTo(points[j]) == 0) {
@@ -117,14 +118,10 @@ public class FastCollinearPoints {
                         }
                         // we have 4+ collinear points, but don't know the far endpoint, because slopes are just same
                         tmplines[nos++] = new LineSegment(smallest, biggest);
-                        // if (donePts == null || smallest.compareTo(donePts[dos]) != 0) {
                         doneSlopes[dos] = foundSlope;
                         donePts[dos++] = smallest;
-                        // }
-                        
-                        donePts[dos] = biggest;
+                        donePts[dos] = biggest; // yes both endpoints needed here, not sure why
                         doneSlopes[dos++] = foundSlope;
-                                                /**/
                     }
                 } 
               
