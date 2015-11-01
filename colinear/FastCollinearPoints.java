@@ -14,8 +14,8 @@ import java.util.Arrays;
 
 public class FastCollinearPoints {
     private int nos = 0;
-    private final int maxNos = 10001;
-    private final LineSegment[] tmplines = new LineSegment[maxNos];
+    private int maxNos = 10001;
+    private LineSegment[] tmplines = new LineSegment[maxNos];
     private boolean debug = false;
 
     /**
@@ -42,13 +42,6 @@ public class FastCollinearPoints {
         // sort the array.  is this insertion sort? why?
         // all lines will point up and to the right.
         // this is wrong and not needed. we check the sorted slope on all points, and this breaks "natural order"
-        /*
-        Object[] opnts = new Object[numP];
-        for (int i = 0; i < numP; i++) { opnts[i] = (Object) points[i]; }
-        Arrays.sort(opnts);
-        //for (int i = 0; i < numP; i++) { System.out.println(i + " " + opnts[i]); }
-        for (int i = 0; i < numP; i++) { points[i] = (Point) opnts[i]; }
-        */
         
         int maxNumP = 1000;
         Point[] slopePts = new Point[numP];
@@ -123,6 +116,18 @@ public class FastCollinearPoints {
                         doneSlopes[dos] = foundSlope;
                         donePts[dos++] = biggest; // yes both endpoints needed here, not sure why
                         
+                        if (maxNos - nos < 4) {
+                            //expand the array, if full
+                            int newMaxNos = maxNos*3;
+                            LineSegment[] newlines = new LineSegment[newMaxNos];
+                            for (int z = 0; z < maxNos; z++) {
+                                if (tmplines[z] == null) break;
+                                newlines[z] = tmplines[z];
+                            }
+                            tmplines = newlines;
+                            maxNos = newMaxNos;
+                        }
+                        
                         if (maxNumP - dos < 4) {
                             //expand the array, if full
                             int newMaxP = maxNumP*10;
@@ -168,13 +173,6 @@ public class FastCollinearPoints {
     }
     public LineSegment[] segments()   {
          
-        // pull out nulls, from the padded array
-        /*
-        LineSegment[] tmplines = new LineSegment[nos];
-        for (int i = 0; i < nos; i++) {
-            if (lines[i] != null) tmplines[i] = lines[i];
-        }
-        */
         final LineSegment[] lines = new LineSegment[nos];
         for (int i = 0; i < nos; i++) {
             if (tmplines[i] != null) lines[i] = tmplines[i];
