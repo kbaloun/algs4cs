@@ -16,16 +16,16 @@ import edu.princeton.cs.algs4.StdOut;
 public class BruteCollinearPoints {
 
     private int nos = 0;
-    // "lines" should be "static", i believe because it needs to be immutable.
+    // "lines" should be "static"?, or "final" i believe because it needs to be immutable.
     // Test 2a: Points from a file with horizontal line segments
      //*  filename = horizontal5.txt
      // java.lang.ArrayIndexOutOfBoundsException: 2
      // BruteCollinearPoints.<init>(BruteCollinearPoints.java:166)
     //private static int maxNos = 1000;
     //private static LineSegment[] lines = new LineSegment[maxNos];
-    private int maxNos = 300;
-    private LineSegment[] lines = new LineSegment[maxNos];
-    private int maxPs = 10001;
+    private final int maxNos = 300;
+    private final LineSegment[] tmplines = new LineSegment[maxNos];
+    private final int maxPs = 10001;
     private int[] dups = new int[maxPs];
     //private LineSegment[] lines = new LineSegment[1];
 
@@ -170,7 +170,7 @@ public class BruteCollinearPoints {
                                     }
                                 }
 
-                                lines[nos++] = new LineSegment(smallest, biggest);
+                                tmplines[nos++] = new LineSegment(smallest, biggest);
                                 /*
                                 System.out.println(smallest + " < " + biggest);
                                 
@@ -189,11 +189,13 @@ public class BruteCollinearPoints {
         }
 
         
-        LineSegment[] tmplines = new LineSegment[nos];
+        /*
         for (int i = 0; i < nos; i++) {
             if (lines[i] != null) tmplines[i] = lines[i];
         }
-        lines = new LineSegment[nos];
+                lines = new LineSegment[nos];
+                */
+        final LineSegment[] lines = new LineSegment[nos];
         for (int i = 0; i < nos; i++) {
             if (tmplines[i] != null) lines[i] = tmplines[i];
         }
@@ -215,11 +217,14 @@ public class BruteCollinearPoints {
             System.out.println("null string?");
         }
         */
+        /*
         LineSegment[] tmplines = new LineSegment[nos];
         for (int i = 0; i < nos; i++) {
             if (lines[i] != null) tmplines[i] = lines[i];
         }
         lines = new LineSegment[nos];
+        */
+        final LineSegment[] lines = new LineSegment[nos];
         for (int i = 0; i < nos; i++) {
             if (tmplines[i] != null) lines[i] = tmplines[i];
         }

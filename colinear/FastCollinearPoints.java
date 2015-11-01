@@ -16,6 +16,7 @@ public class FastCollinearPoints {
     private int nos = 0;
     private int maxNos = 10001;
     private LineSegment[] lines = new LineSegment[maxNos];
+    private boolean debug = false;
 
     /**
      * Initializes a new CollinearPoints computer
@@ -40,37 +41,47 @@ public class FastCollinearPoints {
         
         // sort the array.  is this insertion sort? why?
         // all lines will point up and to the right.
+        // this is wrong and not needed. we check the sorted slope on all points, and this breaks "natural order"
+        /*
         Object[] opnts = new Object[numP];
         for (int i = 0; i < numP; i++) { opnts[i] = (Object) points[i]; }
         Arrays.sort(opnts);
         //for (int i = 0; i < numP; i++) { System.out.println(i + " " + opnts[i]); }
         for (int i = 0; i < numP; i++) { points[i] = (Point) opnts[i]; }
+        */
         
         Point[] slopePts = new Point[numP];
         for (int i = 0; i < numP; i++) { slopePts[i] = points[i]; }
         Point[] donePts = new Point[numP]; // to avoid duplicate entries.  can be smaller?
+        double[] doneSlopes = new double[numP];
         int dos = 0;
 
         
         // main search for collinear points
         for (int i = 0; i < numP; i++) {  
-            
-            // check for duplicate points
-            if (i > 0 && points[i].compareTo(points[i-1]) == 0) throw new IllegalArgumentException("duplicate point");
-            //System.out.println(i + " " + points[i]);
+            if (debug) System.out.println(i + " " + points[i]);
 
             // need to sort ALL other forward&backward points by slope to this point p.i
             Arrays.sort(slopePts, points[i].slopeOrder());
             
-            Point[] foundPts = new Point[100];
-            int fos = 0;
+
+            int dupCnt = 0;
             for (int j = 0; j < numP-1; j++) { 
-                //System.out.println("s" + j + " " + slopePts[j] + " " + points[i].slopeTo(slopePts[j]));
+                            Point[] foundPts = new Point[100];
+            int fos = 0;
+                if (debug) System.out.println("s" + j + " " + slopePts[j] + " " + points[i].slopeTo(slopePts[j]));
+                // check for duplicate points
+                if (points[i].compareTo(points[j]) == 0) {
+                    dupCnt++; //the first time, i found the point itself.  second time is dup.
+                    if (dupCnt > 1) throw new IllegalArgumentException("duplicate point");
+                }
+                 
                 int k = j + 1;
-                int w = 0;
-                while (points[i].slopeTo(slopePts[j]) == points[i].slopeTo(slopePts[k])) {
+                int w = 0;  //redundant to k, but i need simple counting right now
+                double foundSlope = points[i].slopeTo(slopePts[j]);
+                while (k < numP && foundSlope == points[i].slopeTo(slopePts[k])) {
                     // find the highest collinear point
-                    if (k > numP-2) break; // avoid array out of bounds exception
+                    //if (k > numP-1) break; // avoid array out of bounds exception
                     w++;
                     k++;
                 }
@@ -78,9 +89,12 @@ public class FastCollinearPoints {
                     boolean addIt = true;
                     for (int m = 0; m < dos; m++) {
                         // don't add duplicated sub segments
-                        if (donePts[m] != null && points[i].slopeTo(slopePts[j]) == points[i].slopeTo(donePts[m])) { 
+                        if (donePts[m] == null) break;
+                        if (foundSlope == doneSlopes[m] && foundSlope == points[i].slopeTo(donePts[m])) { 
+                            // if this point has been included *for this same slope*, don't count it
                             addIt = false; 
-                            //System.out.println("skipping duplicate" + slopePts[j] + " already with " + donePts[m]);
+                            if (debug) System.out.println("skipping duplicate" + points[i] + " already with " + donePts[m]);
+                            break;
                         }
                     }
                     if (addIt) {
@@ -96,13 +110,20 @@ public class FastCollinearPoints {
                             if (ofp[f] != null) foundPts[f] = (Point) ofp[f];
                         }
                         Point smallest = foundPts[0];
-                        //System.out.println("adding as smallest for" + j + " " + points[i] + " with k,w of " + k + "," + w); 
                         Point biggest = foundPts[fos-1];
-                        //System.out.println("adding as biggest for" + j + " " + foundPts[fos-1] + " with k,w of " + k + "," + w);
+                        if (debug) {
+                            System.out.println("adding as smallest for" + j + " " + points[i] + " with k,w of " + k + "," + w); 
+                            System.out.println("adding as biggest for" + j + " " + foundPts[fos-1] + " with k,w of " + k + "," + w);
+                        }
                         // we have 4+ collinear points, but don't know the far endpoint, because slopes are just same
                         lines[nos++] = new LineSegment(smallest, biggest);
-                        donePts[++dos] = smallest;
-                        donePts[++dos] = biggest;
+                        // if (donePts == null || smallest.compareTo(donePts[dos]) != 0) {
+                        doneSlopes[dos] = foundSlope;
+                        donePts[dos++] = smallest;
+                        // }
+                        
+                        donePts[dos] = biggest;
+                        doneSlopes[dos++] = foundSlope;
                                                 /**/
                     }
                 } 
