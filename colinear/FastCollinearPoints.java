@@ -50,10 +50,11 @@ public class FastCollinearPoints {
         for (int i = 0; i < numP; i++) { points[i] = (Point) opnts[i]; }
         */
         
+        int maxNumP = 1000;
         Point[] slopePts = new Point[numP];
         for (int i = 0; i < numP; i++) { slopePts[i] = points[i]; }
-        Point[] donePts = new Point[numP*15]; // to avoid duplicate entries.  can be smaller?
-        double[] doneSlopes = new double[numP*15];  //nump*numP/2 exceeds run time allowed.
+        Point[] donePts = new Point[maxNumP]; // to avoid duplicate entries.  can be smaller?
+        double[] doneSlopes = new double[maxNumP];  //nump*numP/2 exceeds run time allowed.
         int dos = 0;
 
         
@@ -121,6 +122,21 @@ public class FastCollinearPoints {
                         donePts[dos++] = smallest;
                         doneSlopes[dos] = foundSlope;
                         donePts[dos++] = biggest; // yes both endpoints needed here, not sure why
+                        
+                        if (maxNumP - dos < 4) {
+                            //expand the array, if full
+                            int newMaxP = maxNumP*10;
+                            Point[] newPts = new Point[newMaxP]; 
+                            double[] newSlopes = new double[newMaxP];
+                            for (int z = 0; z < maxNumP; z++) {
+                                if (donePts[z] == null) break;
+                                newPts[z] = donePts[z];
+                                newSlopes[z] = doneSlopes[z];
+                            }
+                            donePts = newPts;
+                            doneSlopes = newSlopes;
+                            maxNumP = newMaxP;
+                        }
                         
                     }
                 } 
