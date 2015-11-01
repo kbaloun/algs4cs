@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class FastCollinearPoints {
     private int nos = 0;
-    private int maxNos = 300;
+    private int maxNos = 10001;
     private LineSegment[] lines = new LineSegment[maxNos];
 
     /**
@@ -47,48 +47,63 @@ public class FastCollinearPoints {
         for (int i = 0; i < numP; i++) { points[i] = (Point) opnts[i]; }
         
         Point[] slopePts = new Point[numP];
+        for (int i = 0; i < numP; i++) { slopePts[i] = points[i]; }
         Point[] donePts = new Point[numP]; // to avoid duplicate entries.  can be smaller?
         int dos = 0;
-        for (int i = 0; i < numP; i++) { slopePts[i] = points[i]; }
+
         
-        for (int i = 0; i < numP-3; i++) {
-            
-            
+        // main search for collinear points
+        for (int i = 0; i < numP; i++) {  
             
             // check for duplicate points
-            if (points[i].compareTo(points[i+1]) == 0) throw new IllegalArgumentException("duplicate point");
+            if (i > 0 && points[i].compareTo(points[i-1]) == 0) throw new IllegalArgumentException("duplicate point");
             //System.out.println(i + " " + points[i]);
-            
-            
-            // find collinear points
-            
-            // need to sort ALL other forward&backward points by slope 
-            
-            Arrays.sort(slopePts, points[i].slopeOrder());
 
+            // need to sort ALL other forward&backward points by slope to this point p.i
+            Arrays.sort(slopePts, points[i].slopeOrder());
+            
+            Point[] foundPts = new Point[20];
+            int fos = 0;
             for (int j = 0; j < numP-1; j++) { 
                 //System.out.println("s" + j + " " + slopePts[j] + " " + points[i].slopeTo(slopePts[j]));
                 int k = j + 1;
                 int w = 0;
                 while (points[i].slopeTo(slopePts[j]) == points[i].slopeTo(slopePts[k])) {
                     // find the highest collinear point
-                    if (j + w >= numP-2) break; // avoid array out of bounds exception
+                    if (j + w > numP-3) break; // avoid array out of bounds exception
                     w++;
                     k++;
                 }
-                if (k - j > 2) {
+                if (w > 1) {   // at least 2 equal slopes, cuz back to pt i makes the 3rd.
                     boolean addIt = true;
                     for (int m = 0; m < dos; m++) {
+                        // don't add duplicated sub segments
                         if (donePts[m] != null && points[i].slopeTo(slopePts[j]) == points[i].slopeTo(donePts[m])) { addIt = false; }
-                        
                     }
                     if (addIt) {
-                        lines[nos++] = new LineSegment(points[i], points[k]);
+                        Point smallest = points[i];
+                        //System.out.println("adding as smallest for" + j + " " + points[i] + " with k,w of " + k + "," + w); 
+                        for (int f = 0; f <= w; f++) {
+                            foundPts[fos++] = slopePts[j+f];
+                            //System.out.println("f" + f + " " + slopePts[j+f]);
+                        }
+                        Object[] ofp = new Object[fos];
+                        for (int f = 0; f < fos; f++) { if (foundPts[f] != null) ofp[f] = (Object) foundPts[f]; }
+                        Arrays.sort(ofp); 
+                        for (int f = 0; f < fos; f++) {
+                            if (ofp[f] != null) foundPts[f] = (Point) ofp[f];
+                        }
+                        Point biggest = foundPts[fos-1];
+                        //System.out.println("adding as biggest for" + j + " " + foundPts[fos-1] + " with k,w of " + k + "," + w);
+                        // we have 4+ collinear points, but don't know the far endpoint, because slopes are just same
+                        lines[nos++] = new LineSegment(smallest, biggest);
                         donePts[++dos] = points[i];
                         donePts[++dos] = points[k];
+                                                /**/
                     }
                 } 
-                
+              
+                // end of loop through sorted slopes by sorted points
             }
         }
 /*
