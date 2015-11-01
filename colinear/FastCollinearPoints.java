@@ -15,7 +15,6 @@ import java.util.Arrays;
 public class FastCollinearPoints {
     private int nos = 0;
     private final int maxNos = 10001;
-    private final int maxPts = 500;
     private final LineSegment[] tmplines = new LineSegment[maxNos];
     private boolean debug = false;
 
@@ -53,8 +52,8 @@ public class FastCollinearPoints {
         
         Point[] slopePts = new Point[numP];
         for (int i = 0; i < numP; i++) { slopePts[i] = points[i]; }
-        Point[] donePts = new Point[numP*3]; // to avoid duplicate entries.  can be smaller?
-        double[] doneSlopes = new double[numP*3];
+        Point[] donePts = new Point[numP*15]; // to avoid duplicate entries.  can be smaller?
+        double[] doneSlopes = new double[numP*15];  //nump*numP/2 exceeds run time allowed.
         int dos = 0;
 
         
@@ -68,7 +67,7 @@ public class FastCollinearPoints {
 
             int dupCnt = 0;
             for (int j = 0; j <= numP-1; j++) { 
-                Point[] foundPts = new Point[maxPts];
+                Point[] foundPts = new Point[numP*2];
                 int fos = 0;
                 if (debug) System.out.println("s" + j + " " + slopePts[j] + " " + points[i].slopeTo(slopePts[j]));
                 // check for duplicate points
