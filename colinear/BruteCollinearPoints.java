@@ -25,8 +25,8 @@ public class BruteCollinearPoints {
     //private static LineSegment[] lines = new LineSegment[maxNos];
     private final int maxNos = 300;
     private final LineSegment[] tmplines = new LineSegment[maxNos];
-    private final int maxPs = 10001;
-    private int[] dups = new int[maxPs];
+    //private final int maxPs = 10001;
+    //private int[] dups = new int[maxPs];
     //private LineSegment[] lines = new LineSegment[1];
 
     /**

@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class FastCollinearPoints {
     private int nos = 0;
     private final int maxNos = 10001;
-    private final int maxPts = 100;
+    private final int maxPts = 500;
     private final LineSegment[] tmplines = new LineSegment[maxNos];
     private boolean debug = false;
 
@@ -53,8 +53,8 @@ public class FastCollinearPoints {
         
         Point[] slopePts = new Point[numP];
         for (int i = 0; i < numP; i++) { slopePts[i] = points[i]; }
-        Point[] donePts = new Point[numP*4]; // to avoid duplicate entries.  can be smaller?
-        double[] doneSlopes = new double[numP*4];
+        Point[] donePts = new Point[numP*3]; // to avoid duplicate entries.  can be smaller?
+        double[] doneSlopes = new double[numP*3];
         int dos = 0;
 
         
@@ -67,12 +67,12 @@ public class FastCollinearPoints {
             
 
             int dupCnt = 0;
-            for (int j = 0; j < numP-1; j++) { 
+            for (int j = 0; j <= numP-1; j++) { 
                 Point[] foundPts = new Point[maxPts];
                 int fos = 0;
                 if (debug) System.out.println("s" + j + " " + slopePts[j] + " " + points[i].slopeTo(slopePts[j]));
                 // check for duplicate points
-                if (points[i].compareTo(points[j]) == 0) {
+                if (points[i].compareTo(slopePts[j]) == 0) {
                     dupCnt++; //the first time, i found the point itself.  second time is dup.
                     if (dupCnt > 1) throw new IllegalArgumentException("duplicate point");
                 }
@@ -113,23 +113,28 @@ public class FastCollinearPoints {
                         Point smallest = foundPts[0];
                         Point biggest = foundPts[fos-1];
                         if (debug) {
-                            System.out.println("adding as smallest for" + j + " " + points[i] + " with k,w of " + k + "," + w); 
-                            System.out.println("adding as biggest for" + j + " " + foundPts[fos-1] + " with k,w of " + k + "," + w);
+                            System.out.println("adding smallest" + j + " " + points[i] + " with k,w of " + k + "," + w); 
+                            System.out.println("adding biggest" + j + " " + foundPts[fos-1] + " with k,w of " + k + "," + w);
                         }
                         // we have 4+ collinear points, but don't know the far endpoint, because slopes are just same
                         tmplines[nos++] = new LineSegment(smallest, biggest);
                         doneSlopes[dos] = foundSlope;
                         donePts[dos++] = smallest;
-                        donePts[dos] = biggest; // yes both endpoints needed here, not sure why
-                        doneSlopes[dos++] = foundSlope;
+                        doneSlopes[dos] = foundSlope;
+                        donePts[dos++] = biggest; // yes both endpoints needed here, not sure why
+                        
                     }
                 } 
               
                 // end of loop through sorted slopes by sorted points
             }
         }
+        if (debug) { 
+            for (int z = 0; z < dos; z++) {
+            System.out.println("done point " + z + " is " + donePts[z]);
           
-            
+            }
+        }
             // for each point p create a compareTo-sorted array of slopes to p
             
             // run through this array looking for chains of 4 or more lines
