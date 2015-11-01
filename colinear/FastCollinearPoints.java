@@ -14,8 +14,8 @@ import java.util.Arrays;
 
 public class FastCollinearPoints {
     private int nos = 0;
-    private int maxNos = 10001;
-    private LineSegment[] lines = new LineSegment[maxNos];
+    private final int maxNos = 10001;
+    private final LineSegment[] tmplines = new LineSegment[maxNos];
     private boolean debug = false;
 
     /**
@@ -52,8 +52,8 @@ public class FastCollinearPoints {
         
         Point[] slopePts = new Point[numP];
         for (int i = 0; i < numP; i++) { slopePts[i] = points[i]; }
-        Point[] donePts = new Point[numP]; // to avoid duplicate entries.  can be smaller?
-        double[] doneSlopes = new double[numP];
+        Point[] donePts = new Point[numP*2]; // to avoid duplicate entries.  can be smaller?
+        double[] doneSlopes = new double[numP*2];
         int dos = 0;
 
         
@@ -116,7 +116,7 @@ public class FastCollinearPoints {
                             System.out.println("adding as biggest for" + j + " " + foundPts[fos-1] + " with k,w of " + k + "," + w);
                         }
                         // we have 4+ collinear points, but don't know the far endpoint, because slopes are just same
-                        lines[nos++] = new LineSegment(smallest, biggest);
+                        tmplines[nos++] = new LineSegment(smallest, biggest);
                         // if (donePts == null || smallest.compareTo(donePts[dos]) != 0) {
                         doneSlopes[dos] = foundSlope;
                         donePts[dos++] = smallest;
@@ -131,39 +131,6 @@ public class FastCollinearPoints {
                 // end of loop through sorted slopes by sorted points
             }
         }
-/*
-            if ((points[i].slopeTo(points[i+1]) == 0) && (points[i].slopeTo(points[i+2]) == 0) 
-                    && (points[i].slopeTo(points[i+2]) == 0) && (points[i].slopeTo(points[i+3]) == 0)) {
-                // we have 4 collinear points!
-
-                double s1 = points[i].slopeTo(points[j]);
-                                double s2 = points[j].slopeTo(points[k]);
-                                double s3 = points[j].slopeTo(points[m]);
-                                System.out.println(s1 + " " + s2 + " " +s3 + " " + points[i].toString() + " " +
-                                    points[j].toString() + " " + points[k].toString() + " " + points[m].toString());
-
-                // any more points, for 5+ collinear points?  works up to 7 due to the bound check
-                // first check if space in array to avoid exceptions
-                if (i > numP-7 && points[i].slopeTo(points[i+4]) == 0) {
-                    if (i > numP-7 && points[i].slopeTo(points[i+5]) == 0) {
-                        if (i > numP-7 && points[i].slopeTo(points[i+6]) == 0) {
-                            //7pt line
-                            lines[nos] = new LineSegment(points[i], points[i+6]);
-                        } else {
-                            // 6pt line
-                            lines[nos] = new LineSegment(points[i], points[i+5]);
-                        }
-                    } else {
-                        // 5pt line
-                        lines[nos] = new LineSegment(points[i], points[i+4]);
-                    }
-                } else {
-                    // insert the 4-point segment
-                    lines[nos] = new LineSegment(points[i], points[i+3]);  
-                }
-                nos++;
-            }
-            */
           
             
             // for each point p create a compareTo-sorted array of slopes to p
@@ -175,17 +142,7 @@ public class FastCollinearPoints {
             // if the original sort was *stable*, each of the points should already be in order.
             // (if not, compareTo-sort the chained points)
             
-            
-            
-          //p.compareTo(
-          //Point[] pts = points[i].slopeOrder<points[i]>;
-          //Arrays.sort(points, new slopeOrder); //points[i].slopeOrder<points[i]>);
-          //Arrays.sort(points, slopeOrder);
-          //Arrays.sort(points, SlopeOrder);
-                      
-          //System.out.println(p.toString());
-          //if (pStr[p.toString()] == 1) throw new IllegalArgumentException("a duplicate point is loaded");
-          //else pStr[p.toString()] = 1;
+
 
     }
     
@@ -195,18 +152,18 @@ public class FastCollinearPoints {
     public LineSegment[] segments()   {
          
         // pull out nulls, from the padded array
+        /*
         LineSegment[] tmplines = new LineSegment[nos];
         for (int i = 0; i < nos; i++) {
             if (lines[i] != null) tmplines[i] = lines[i];
         }
-        lines = new LineSegment[nos];
+        */
+        final LineSegment[] lines = new LineSegment[nos];
         for (int i = 0; i < nos; i++) {
             if (tmplines[i] != null) lines[i] = tmplines[i];
         }
         return lines;
     }
-
-
 
 
     public static void main(String[] args) {
