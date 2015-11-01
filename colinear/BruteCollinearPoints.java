@@ -75,7 +75,7 @@ public class BruteCollinearPoints {
                                 
                                 // find first and last end point, from the set of 4.
                                 // this is terrible spaghetti code :-(
-                                
+                                // well, why didn't i just *sort* these 4 array elements?  in 'fast' i'll do better.
                                 Point biggest = null;
                                 Point smallest = null;
                                 boolean mIsBiggest = false;

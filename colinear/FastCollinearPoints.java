@@ -36,22 +36,64 @@ public class FastCollinearPoints {
           
         }
         
-        // check for dups
-        for (int i = 0; i < numP; i++) {
-            for (int j = 0; j < numP; j++) {
-                if (i == j) continue;
-                if (points[i] == null || points[j] == null) continue;
-                if (points[i].compareTo(points[j]) == 0) throw new IllegalArgumentException("dup point");
+        // prepare the array
+        
+        // sort the array.  is this insertion sort? why?
+        // all lines will point up and to the right.
+        Object[] opnts = new Object[numP];
+        for (int i = 0; i < numP; i++) { opnts[i] = (Object) points[i]; }
+        Arrays.sort(opnts);
+        for (int i = 0; i < numP; i++) { points[i] = (Point) opnts[i]; }
+        
+        for (int i = 0; i < numP-3; i++) {
+            
+            // check for duplicate points
+            if (points[i].compareTo(points[i+1]) == 0) throw new IllegalArgumentException("duplicate point");
+            
+            // find collinear points
+            if ((points[i].slopeTo(points[i+1]) == 0) && (points[i].slopeTo(points[i+2]) == 0) 
+                    && (points[i].slopeTo(points[i+2]) == 0) && (points[i].slopeTo(points[i+3]) == 0)) {
+                // we have 4 collinear points!
+                
+                // any more points, for 5+ collinear points?  works up to 7 due to the bound check
+                // first check if space in array to avoid exceptions
+                if (i > numP-7 && points[i].slopeTo(points[i+4]) == 0) {
+                    if (i > numP-7 && points[i].slopeTo(points[i+5]) == 0) {
+                        if (i > numP-7 && points[i].slopeTo(points[i+6]) == 0) {
+                            //7pt line
+                            lines[nos] = new LineSegment(points[i], points[i+6]);
+                        } else {
+                            // 6pt line
+                            lines[nos] = new LineSegment(points[i], points[i+5]);
+                        }
+                    } else {
+                        // 5pt line
+                        lines[nos] = new LineSegment(points[i], points[i+4]);
+                    }
+                } else {
+                    // insert the 4-point segment
+                    lines[nos] = new LineSegment(points[i], points[i+3]);  
+                }
+                nos++;
             }
         }
           
-        for (int i = 0; i < numP; i++) {
+            
+            // for each point p create a compareTo-sorted array of slopes to p
+            
+            // run through this array looking for chains of 4 or more lines
+            
+          
+            // take the first point and last point, and add it to return lines
+            // if the original sort was *stable*, each of the points should already be in order.
+            // (if not, compareTo-sort the chained points)
+            
+            
             
           //p.compareTo(
           //Point[] pts = points[i].slopeOrder<points[i]>;
           //Arrays.sort(points, new slopeOrder); //points[i].slopeOrder<points[i]>);
           //Arrays.sort(points, slopeOrder);
-        }
           //Arrays.sort(points, SlopeOrder);
                       
           //System.out.println(p.toString());
