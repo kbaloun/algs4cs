@@ -170,8 +170,7 @@ public class BruteCollinearPoints {
                                     }
                                 }
 
-                                lines[nos] = new LineSegment(smallest, biggest);
-                                nos++;
+                                lines[nos++] = new LineSegment(smallest, biggest);
                                 /*
                                 System.out.println(smallest + " < " + biggest);
                                 

@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class FastCollinearPoints {
     private int nos = 0;
-    private int maxNos = 100;
+    private int maxNos = 300;
     private LineSegment[] lines = new LineSegment[maxNos];
 
     /**
@@ -43,18 +43,65 @@ public class FastCollinearPoints {
         Object[] opnts = new Object[numP];
         for (int i = 0; i < numP; i++) { opnts[i] = (Object) points[i]; }
         Arrays.sort(opnts);
+        //for (int i = 0; i < numP; i++) { System.out.println(i + " " + opnts[i]); }
         for (int i = 0; i < numP; i++) { points[i] = (Point) opnts[i]; }
+        
+        Point[] slopePts = new Point[numP];
+        Point[] donePts = new Point[numP]; // to avoid duplicate entries.  can be smaller?
+        int dos = 0;
+        for (int i = 0; i < numP; i++) { slopePts[i] = points[i]; }
         
         for (int i = 0; i < numP-3; i++) {
             
+            
+            
             // check for duplicate points
             if (points[i].compareTo(points[i+1]) == 0) throw new IllegalArgumentException("duplicate point");
+            //System.out.println(i + " " + points[i]);
+            
             
             // find collinear points
+            
+            // need to sort ALL other forward&backward points by slope 
+            
+            Arrays.sort(slopePts, points[i].slopeOrder());
+
+            for (int j = 0; j < numP-1; j++) { 
+                //System.out.println("s" + j + " " + slopePts[j] + " " + points[i].slopeTo(slopePts[j]));
+                int k = j + 1;
+                int w = 0;
+                while (points[i].slopeTo(slopePts[j]) == points[i].slopeTo(slopePts[k])) {
+                    // find the highest collinear point
+                    if (j + w >= numP-2) break; // avoid array out of bounds exception
+                    w++;
+                    k++;
+                }
+                if (k - j > 2) {
+                    boolean addIt = true;
+                    for (int m = 0; m < dos; m++) {
+                        if (donePts[m] != null && points[i].slopeTo(slopePts[j]) == points[i].slopeTo(donePts[m])) { addIt = false; }
+                        
+                    }
+                    if (addIt) {
+                        lines[nos++] = new LineSegment(points[i], points[k]);
+                        donePts[++dos] = points[i];
+                        donePts[++dos] = points[k];
+                    }
+                } 
+                
+            }
+        }
+/*
             if ((points[i].slopeTo(points[i+1]) == 0) && (points[i].slopeTo(points[i+2]) == 0) 
                     && (points[i].slopeTo(points[i+2]) == 0) && (points[i].slopeTo(points[i+3]) == 0)) {
                 // we have 4 collinear points!
-                
+
+                double s1 = points[i].slopeTo(points[j]);
+                                double s2 = points[j].slopeTo(points[k]);
+                                double s3 = points[j].slopeTo(points[m]);
+                                System.out.println(s1 + " " + s2 + " " +s3 + " " + points[i].toString() + " " +
+                                    points[j].toString() + " " + points[k].toString() + " " + points[m].toString());
+
                 // any more points, for 5+ collinear points?  works up to 7 due to the bound check
                 // first check if space in array to avoid exceptions
                 if (i > numP-7 && points[i].slopeTo(points[i+4]) == 0) {
@@ -76,7 +123,7 @@ public class FastCollinearPoints {
                 }
                 nos++;
             }
-        }
+            */
           
             
             // for each point p create a compareTo-sorted array of slopes to p
@@ -144,7 +191,7 @@ public class FastCollinearPoints {
         StdDraw.show();
 
         // print and draw the line segments
-        BruteCollinearPoints collinear = new BruteCollinearPoints(points);
+        FastCollinearPoints collinear = new FastCollinearPoints(points);
         for (LineSegment segment : collinear.segments()) {
             StdOut.println(segment);
             segment.draw();
