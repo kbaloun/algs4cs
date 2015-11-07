@@ -30,6 +30,11 @@ public class Solver {
         //compute the priority function in Solver by calling hamming() or manhattan() and adding to it the number of moves.
         
         // use one twin, so see whether this or the twin is solvable
+        Board aTwin = initial.twin();
+        
+        //using two synchronized A* searches (e.g., using two priority queues). 
+        // get the neighbors, and put them in order on the Queue.
+        // do not include any board .equal() to the prior position
     }
     public boolean isSolvable()  {
         // is the initial board solvable?
