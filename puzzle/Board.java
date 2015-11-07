@@ -95,38 +95,37 @@ public final class Board {
         // ensure that neither swapped block is the zero block, pick the first two non-zero blocks
         int[][] b2 = this.blockarr;
         int tmp;
-        if (b2[1][1] != 0) {
+        if (b2[0][0] != 0) {
             // first point wasn't zero, swap it
-            tmp = b2[1][1]; 
-            if (b2[1][2] != 0) {
+            tmp = b2[0][0]; 
+            if (b2[0][1] != 0) {
                 //first and second points not zero, swap these
-                b2[1][1] = b2[1][2];
-                b2[1][2] = tmp;
+                b2[0][0] = b2[0][1];
+                b2[0][1] = tmp;
             } else {
                 // second point was zero, find next swap spot
                 if (N > 2) {
                     // space to swap on row
-                    b2[1][1] = b2[1][3];
-                    b2[1][3] = tmp;
+                    b2[0][0] = b2[0][2];
+                    b2[0][2] = tmp;
                 } else {
                     // swap into next row
-                    b2[1][1] = b2[2][1];
-                    b2[2][1] = tmp;
+                    b2[0][0] = b2[1][0];
+                    b2[1][0] = tmp;
                 }
             }       
-        } else if (b2[1][2] != 0) {
+        } else if (b2[0][1] != 0) {
             // the first position was zero
-            tmp = b2[1][2];
+            tmp = b2[0][1];
             if (N > 2) {
                 // space to swap on row
-                b2[1][2] = b2[1][3];
-                b2[1][3] = tmp;
+                b2[0][1] = b2[0][2];
+                b2[0][2] = tmp;
             } else {
                 // swap into next row
-                b2[1][2] = b2[2][1];
-                b2[2][1] = tmp;
+                b2[0][1] = b2[1][0];
+                b2[1][0] = tmp;
             }
-            b2[1][2] = tmp;
         } else {
             System.out.println("can not have two zero points on a board");
         }
@@ -146,7 +145,35 @@ public final class Board {
         return true;
     }
     public Iterable<Board> neighbors() {
-        // all neighboring boards
+        // all neighboring boards, which include any block that can slide into the zero position
+        Board[] newBs = new Board[4];
+        int bcnt = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (this.blockarr[i][j] == 0)  {
+                    if (i > 0) { 
+                        // swap zero with above item
+                        int[][] newb = this.blockarr;
+                        int t = newb[i-1][j];
+                        newb[i-1][j] = 0;
+                        newb[i][j] = t;
+                        newBs[bcnt] = new Board(newb);
+                        bcnt++;
+                    }
+                    if (j > 0) {
+                        // swap zero with left item
+                    }
+                    if (j < N - 1) {
+                        // swap zero with right item
+                    }
+                    if (i < N - 1) {
+                        // swap zero with below item
+                    }
+                }
+            }
+        }
+        // sort the 2-4 boards, and enque them in order, with lowest manhatten score to come off first(?)
+        
         //Add the items you want to a Stack<Board> or Queue<Board> and return that
         MinPQ<Board> bq = new MinPQ();
         return bq;
@@ -181,6 +208,15 @@ public final class Board {
         System.out.println("Dims " + initial.dimension());
         Board twin = initial.twin();
         StdOut.printf(twin.toString());
+        /*
+        MinPQ<Board> rbq = new MinPQ();
+        rbq = initial.neighbors();
+        while (!rbq.empty()) {
+            Board be = rbq.delmin();
+            System.out.println("Neighbor " + be.manhattan());
+            StdOut.printf(be.toString());
+        }
+        */
         
     }
         
