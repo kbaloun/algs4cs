@@ -96,7 +96,7 @@ public class Board {
                     int horz = Math.abs(j - correctHpos);
                     int vert = Math.abs(i - correctVpos);
 
-                    System.out.println("adding manhattan horz " + horz + " vert " + vert + " at i " + i + " j " + j + " at pos " + pos);
+                    //System.out.println("adding manhattan horz " + horz + " vert " + vert + " at i " + i + " j " + j + " at pos " + pos);
                     man = man + vert + horz;
                 }
                 pos++; 
