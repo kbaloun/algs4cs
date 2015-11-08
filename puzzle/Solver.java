@@ -23,21 +23,102 @@ import edu.princeton.cs.algs4.StdOut;
 public class Solver {
     private int moves2solve = 0;
     private MinPQ pq;
+    private MinPQ twinpq;
+    private MinPQ spq; //to hold the solution
     
     public Solver(Board initial)  {
         // find a solution to the initial board (using the A* algorithm)
         pq = new MinPQ();
+        twinpq = new MinPQ();
         //compute the priority function in Solver by calling hamming() or manhattan() and adding to it the number of moves.
         
+        Board priorState = initial;
+        Board firstState = initial;
         // use one twin, so see whether this or the twin is solvable
         Board aTwin = initial.twin();
+        Board twinPriorState = aTwin;
+        
+        //these are kind of for debugging, as showing an upper bound to the number of steps
+        int steps = 0;
+        int twinsteps = 0;
         
         //using two synchronized A* searches (e.g., using two priority queues). 
         // get the neighbors, and put them in order on the Queue.
-        // do not include any board .equal() to the prior position
+        
+        int test = 0;
+        while (test < 5 && !initial.isGoal() && !aTwin.isGoal()) {
+
+            test++;
+            for (Board board : initial.neighbors()) {
+                StdOut.println("the initial board neighbor, dim = " + board);
+                int minMan = 100000; //any number higher than an supported board manhattan score
+                
+                // do not include any board .equal() to the prior position
+                if (board.equals(priorState)) continue;
+                pq.insert(board);
+                
+                // proceed to next lowest manhattan board, if tie choose any, so later one overwrites
+                priorState = initial;
+                if (board.manhattan() <= minMan) {
+                    initial = board;
+                }
+                steps++;
+            }
+            // Same for twin, synchronized
+            for (Board twinboard : aTwin.neighbors()) {
+                StdOut.println("the twin board neighbor, dim = " + twinboard);
+                int twinMinMan = 100000;
+                
+                // do not include any board .equal() to the prior position
+                if (twinboard.equals(twinPriorState)) continue;
+                twinpq.insert(twinboard);
+                
+                // proceed to next lowest manhattan board, if tie choose any, so later one overwrites
+                twinPriorState = aTwin;
+                if (twinboard.manhattan() <= twinMinMan) {
+                    aTwin = twinboard;
+                }
+                twinsteps++;
+            }
+            System.out.println("initial's steps " + steps + "twin's steps " + twinsteps);
+        }
+        // note, at this point initial and aTwin contain whatever the final solved state is.
+        // one of them should have reached the goal.
+     
+        //if each neighbor has a higher manhattan score, ARE we done?
+        //if unsolveable set moves2solve to -1
+        if (false && aTwin.isGoal()) {
+            moves2solve = -1;
+            spq = null; //just to be sure
+        } else if (initial.isGoal()) {
+            //record the solution sequence
+
+            //Add the items you want to a Stack<Board> or Queue<Board> and return that
+            System.out.println("starting to solve");
+            spq = new MinPQ(); 
+            int solCnt = 0;
+            final MinPQ<Board> pqCopy = pq;
+            //Board[] solutionPath = new Board[moves2solve];
+            while (!pqCopy.isEmpty()) {
+                //if (pqCopy.min()
+                // TODO something about continue;
+                //Board nextStep = new Board(pqCopy.delMin());
+                Board bstep = pqCopy.delMin();
+                spq.insert(bstep);
+                if (bstep.equals(firstState)) break;
+            }
+            if (solCnt != spq.size()) System.out.println("error -- unexpected MinPQ result.");
+            moves2solve = spq.size();
+        } else {
+            System.out.println("error -- exactly ONE OF twin OR the initial state must be solvable.");    
+        }
+                // ?
     }
     public boolean isSolvable()  {
         // is the initial board solvable?
+        if (moves2solve == -1) return false;
+        if (moves2solve > 0) return true;
+        //should return true if the initial states is the goal as well TODO
         return false;
     }
     public int moves()   {
@@ -46,11 +127,11 @@ public class Solver {
     }
     public Iterable<Board> solution() {
         // sequence of boards in a shortest solution; null if unsolvable
-        
-        //Add the items you want to a Stack<Board> or Queue<Board> and return that
-        MinPQ<Board> bq = new MinPQ();
-        return bq;
-    }
+        if (moves2solve == -1) return null;
+        // now i know there exists a solution, so must just return it, no checks needed
+        // spq was built in constructor
+        return spq;
+}
     public static void main(String[] args) {
         // solve a slider puzzle (given below)
         

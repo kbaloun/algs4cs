@@ -20,12 +20,13 @@ import edu.princeton.cs.algs4.StdOut;
      * @param  blocks  N-N array of integers, defining the initial board
      * 
      */
-public final class Board {
+public final class Board implements Comparable {
     
     private int N = 0; // the dimension
     private int[][] blockarr; // the board array data
-    private int ham = 0;
-    private int man = 0;
+    private int ham = -5;  //anything other than -1, 0 or a positive integer
+    private int man = -5;
+    private boolean alreadyCalculated = false;
 
     
     public Board(int[][] blocks) {
@@ -37,6 +38,9 @@ public final class Board {
         //anything need to be done for the zero block?
         
         // can i check the lengths of the two dimensions, to ensure equal?
+        if (blockarr.length != blockarr[0].length) {
+            System.out.println("error -- the board array isn't a square");
+        }
 
     }
     
@@ -48,7 +52,7 @@ public final class Board {
     }
     public int hamming()    {
         // number of blocks out of place
-        ham = 0;
+        if (alreadyCalculated) return ham;
         int pos = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -58,11 +62,12 @@ public final class Board {
                 if (blockarr[i][j] != pos) ham++;
             }
         }
+        alreadyCalculated = true;
         return ham;
     }
     public int manhattan()   {
         // sum of Manhattan distances between blocks and goal
-        man = 0;
+        if (alreadyCalculated) return man;
         int pos = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -78,12 +83,13 @@ public final class Board {
                 }
             }
         }
+        alreadyCalculated = true;
         return man;
 
     }
     public boolean isGoal()   {
         // is this board the goal board?
-        if (ham == 0) {
+        if (ham == 0 && man == 0) {
             return true;
         }else {
             return false;
@@ -146,14 +152,23 @@ public final class Board {
     }
     public Iterable<Board> neighbors() {
         // all neighboring boards, which include any block that can slide into the zero position
+        // note that order of neighbors prefers those down and to the right
+        //    by making them later boards in the loop comparison, so they win ties.
         Board[] newBs = new Board[4];
+        int[][] newb = new int[N][N];
         int bcnt = 0;
+        boolean returnNow = false;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (this.blockarr[i][j] == 0)  {
+                if (!returnNow && this.blockarr[i][j] == 0)  {
+                    System.out.println("bcnt = " + bcnt);
                     if (i > 0) { 
                         // swap zero with above item
-                        int[][] newb = this.blockarr;
+                        for (int m = 0; m < N; m++) {
+                            for (int n = 0; n < N; n++) {
+                                newb[m][n] = this.blockarr[m][n];
+                            }
+                        }
                         int t = newb[i-1][j];
                         newb[i-1][j] = 0;
                         newb[i][j] = t;
@@ -162,22 +177,58 @@ public final class Board {
                     }
                     if (j > 0) {
                         // swap zero with left item
+                        for (int m = 0; m < N; m++) {
+                            for (int n = 0; n < N; n++) {
+                                newb[m][n] = this.blockarr[m][n];
+                            }
+                        }
+                        int t = newb[i][j-1];
+                        newb[i][j-1] = 0;
+                        newb[i][j] = t;
+                        newBs[bcnt] = new Board(newb);
+                        bcnt++;
                     }
                     if (j < N - 1) {
                         // swap zero with right item
+                        for (int m = 0; m < N; m++) {
+                            for (int n = 0; n < N; n++) {
+                                newb[m][n] = this.blockarr[m][n];
+                            }
+                        }
+                        int t = newb[i][j+1];
+                        newb[i][j+1] = 0;
+                        newb[i][j] = t;
+                        newBs[bcnt] = new Board(newb);
+                        bcnt++;
                     }
                     if (i < N - 1) {
                         // swap zero with below item
+                        for (int m = 0; m < N; m++) {
+                            for (int n = 0; n < N; n++) {
+                                newb[m][n] = this.blockarr[m][n];
+                            }
+                        }
+                        int t = newb[i+1][j];
+                        newb[i+1][j] = 0;
+                        newb[i][j] = t;
+                        newBs[bcnt] = new Board(newb);
                     }
+                    // there is only 1 zero among the blocks
+                   returnNow = true;
                 }
             }
         }
-        // sort the 2-4 boards, and enque them in order, with lowest manhatten score to come off first(?)
-        
+        System.out.println("bcnt = " + bcnt);
         //Add the items you want to a Stack<Board> or Queue<Board> and return that
         MinPQ<Board> bq = new MinPQ();
+        // can i just insert them into the queue or do I need to
+        // sort the 2-4 boards, and enque them in order, with lowest manhatten score to come off first(?)
+        for (int z = 0; z < bcnt; z++) {
+            if (newBs[bcnt] != null) bq.insert(newBs[bcnt]);
+        }
         return bq;
     }
+    
     public String toString() {
         // string representation of this board (in the output format specified below)
         
@@ -191,6 +242,29 @@ public final class Board {
         }
         return s.toString();
     }
+    
+    //Comparable interface has method public int compareTo(Object o) which returns a negative integer,
+    //    zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+    //Read more: http://javarevisited.blogspot.com/2011/06/comparator-and-comparable-in-java.html#ixzz3qqhmkVxx
+    
+    public final int compareTo(Object that) {
+        Board thatb = (Board) that;
+        if (this.manhattan() < thatb.manhattan()) return -1;
+        if (this.equals(thatb)) return 0;
+        if (this.manhattan() >= thatb.manhattan()) return 1;
+        //if (this.man < thatb.man) return -1;
+        //if (this.man > thatb.man) return 1;
+        return -5; // should never see that!
+    }
+
+    /*
+    public final Comparator<Board> BY_MANHATTAN = new ByManhattan();
+    private static class ByManhattan implements Comparator<Board> {
+        public int compare(Board b1, Board b2) {
+            return b1.manhattan() <= b2.manhattan();
+        }
+    }
+    */
     
     public static void main(String[] args) {
         // unit tests (not graded)
@@ -206,6 +280,7 @@ public final class Board {
         System.out.println("M " + initial.manhattan());
         System.out.println("H " + initial.hamming());
         System.out.println("Dims " + initial.dimension());
+        System.out.println("One twin is:");
         Board twin = initial.twin();
         StdOut.printf(twin.toString());
         /*
@@ -216,6 +291,7 @@ public final class Board {
             System.out.println("Neighbor " + be.manhattan());
             StdOut.printf(be.toString());
         }
+        //if the priority of the search node dequeued from the priority queue decreases, then you know you did something wrong.
         */
         
     }
