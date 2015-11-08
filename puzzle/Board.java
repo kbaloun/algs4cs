@@ -13,6 +13,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 //import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Queue;
 
     /**
      * Initializes a new Board.
@@ -34,10 +35,13 @@ public class Board {
     public Board(int[][] blocks) {
         // construct a board from an N-by-N array of blocks
         // (where blocks[i][j] = block in row i, column j)
-        blockarr = blocks;
-        N = blockarr.length; 
-        
-        //anything need to be done for the zero block?
+        N = blocks.length;
+        blockarr = new int[N][N];
+        for (int m = 0; m < N; m++) {
+            for (int n = 0; n < N; n++) {
+                blockarr[m][n] = blocks[m][n];
+            }
+        }
         
         // can i check the lengths of the two dimensions, to ensure equal?
         if (blockarr.length != blockarr[0].length) {
@@ -78,7 +82,7 @@ public class Board {
                     if (blockarr[i][j] == 0) continue; // skip zero block
                     // calculate vertical and horizontal distance to final position
                     int correctHpos = blockarr[i][j] % N;
-                        int correctVpos = (int) Math.ceil(blockarr[i][j] / N);
+                    int correctVpos = (int) Math.ceil(blockarr[i][j] / N);
                     int vert = Math.abs(i - correctVpos);
                     int hort = Math.abs(j - correctHpos);
                     man = man + vert + hort;
@@ -91,6 +95,10 @@ public class Board {
     }
     public boolean isGoal()   {
         // is this board the goal board?
+        if (ham == -5 || man == -5) {
+            ham = this.hamming();
+            man = this.manhattan();
+        }
         if (ham == 0 && man == 0) {
             return true;
         }else {
@@ -101,7 +109,12 @@ public class Board {
         // a board that is obtained by exchanging any pair of blocks
         // use it to determine whether a puzzle is solvable: exactly one of a board and its twin are solvable
         // ensure that neither swapped block is the zero block, pick the first two non-zero blocks
-        int[][] b2 = this.blockarr;
+        int[][] b2 = new int[N][N];
+        for (int m = 0; m < N; m++) {
+            for (int n = 0; n < N; n++) {
+                b2[m][n] = this.blockarr[m][n];
+            }
+        } 
         int tmp;
         if (b2[0][0] != 0) {
             // first point wasn't zero, swap it
@@ -163,7 +176,7 @@ public class Board {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if (!returnNow && this.blockarr[i][j] == 0)  {
-                    System.out.println("bcnt = " + bcnt);
+                    //System.out.println("bcnt = " + bcnt);
                     if (i > 0) { 
                         // swap zero with above item
                         for (int m = 0; m < N; m++) {
@@ -214,6 +227,7 @@ public class Board {
                         newb[i+1][j] = 0;
                         newb[i][j] = t;
                         newBs[bcnt] = new Board(newb);
+                        bcnt++;
                     }
                     // there is only 1 zero among the blocks
                    returnNow = true;
@@ -222,13 +236,15 @@ public class Board {
         }
         System.out.println("bcnt = " + bcnt);
         //Add the items you want to a Stack<Board> or Queue<Board> and return that
-        MinPQ<Board> bq = new MinPQ();
+        Queue<Board> q = new Queue();
+        //MinPQ bq = new MinPQ();
         // can i just insert them into the queue or do I need to
         // sort the 2-4 boards, and enque them in order, with lowest manhatten score to come off first(?)
         for (int z = 0; z < bcnt; z++) {
-            if (newBs[bcnt] != null) bq.insert(newBs[bcnt]);
+            if (newBs[z] != null) q.enqueue(newBs[z]);
         }
-        return bq;
+        return q;
+
     }
     
     public String toString() {

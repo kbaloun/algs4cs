@@ -24,20 +24,41 @@ public class Solver {
     private int moves2solve = 0;
     private MinPQ pq;
     private MinPQ twinpq;
-    private MinPQ spq; //to hold the solution
+    private MinPQ solpq;
+    private SearchNode solutionNode = null; //to hold the solution
     
     public Solver(Board initial)  {
         // find a solution to the initial board (using the A* algorithm)
+        
+        if (initial == null) throw new java.lang.NullPointerException("solver requires a not-null initial board");
         pq = new MinPQ();
         twinpq = new MinPQ();
         //compute the priority function in Solver by calling hamming() or manhattan() and adding to it the number of moves.
         
-        Board priorState = initial;
-        Board firstState = initial;
+        // create a SearchNode for the initial board, since it is the only one to not come off of the MinPQ
+        SearchNode snInitial = new SearchNode();
+        snInitial.searchBoard = initial;
+        snInitial.previousNode = null;
+        snInitial.priority = initial.manhattan();
+        snInitial.moves = 0;
+        SearchNode priorNode = snInitial;
+        Board current = initial;
+        
+        boolean foundSolution = false;
+        boolean foundTwinSolution = false;
+
         // use one twin, so see whether this or the twin is solvable
         Board aTwin = initial.twin();
-        Board twinPriorState = aTwin;
+        SearchNode snTwin = new SearchNode();
+        snTwin.searchBoard = aTwin;
+        snTwin.previousNode = null;
+        snTwin.priority = aTwin.manhattan();
+        snTwin.moves = 0;
+        SearchNode twinPriorNode = snTwin;
+        Board currenttwin = aTwin;
         
+        StdOut.println("starting with initial board, dim = " + initial);
+        StdOut.println("starting with twin board, dim = " + aTwin);
         //these are kind of for debugging, as showing an upper bound to the number of steps
         int steps = 0;
         int twinsteps = 0;
@@ -47,73 +68,69 @@ public class Solver {
         // get the neighbors, and put them in order on the Queue.
         
         int test = 0;
-        while (test < 5 && !initial.isGoal() && !aTwin.isGoal()) {
+        
+        while (test < 3 && !foundSolution && !foundTwinSolution) {
+        //while (!initial.isGoal() && !aTwin.isGoal()) {
 
             test++;
-            for (Board board : initial.neighbors()) {
-                StdOut.println("the initial board neighbor, dim = " + board);
-                int minMan = 100000; //any number higher than an supported board manhattan score
+            steps++;
+            twinsteps++;
+            for (Board board : current.neighbors()) {
+
+                SearchNode sn = new SearchNode();
+                sn.searchBoard = board;
+                sn.previousNode = priorNode;
+                sn.priority = board.manhattan();
+                sn.moves = steps;
+                //Board board = sn.searchBoard;
+                StdOut.println("an initial board neighbor, dim = " + board);
                 
                 // do not include any board .equal() to the prior position
-                if (board.equals(priorState)) continue;
-                pq.insert(board);
+                if (board.equals(priorNode.searchBoard)) continue;
+                pq.insert(sn);
                 
-                // proceed to next lowest manhattan board, if tie choose any, so later one overwrites
-                priorState = initial;
-                if (board.manhattan() <= minMan) {
-                    initial = board;
-                }
-                steps++;
+                if (sn.priority == 0) {
+                //if (board.isGoal()) {
+                    moves2solve = steps;
+                    foundSolution = true;
+                    solutionNode = sn;
+                } 
             }
             // Same for twin, synchronized
-            for (Board twinboard : aTwin.neighbors()) {
-                StdOut.println("the twin board neighbor, dim = " + twinboard);
-                int twinMinMan = 100000;
+            for (Board twinboard : currenttwin.neighbors()) {
+                snTwin = new SearchNode();
+                snTwin.searchBoard = twinboard;
+                snTwin.previousNode = twinPriorNode;
+                snTwin.priority = twinboard.manhattan();
+                snTwin.moves = twinsteps;
+                StdOut.println("an twin board neighbor, dim = " + twinboard);
                 
                 // do not include any board .equal() to the prior position
-                if (twinboard.equals(twinPriorState)) continue;
-                twinpq.insert(twinboard);
+                if (twinboard.equals(twinPriorNode.searchBoard)) continue;
+                twinpq.insert(snTwin);
                 
-                // proceed to next lowest manhattan board, if tie choose any, so later one overwrites
-                twinPriorState = aTwin;
-                if (twinboard.manhattan() <= twinMinMan) {
-                    aTwin = twinboard;
-                }
-                twinsteps++;
+                if (snTwin.priority == 0) {
+                //if (board.isGoal()) {
+                    //if unsolveable set moves2solve to -1
+                    moves2solve = -1;
+                    foundTwinSolution = true;
+                } 
             }
             System.out.println("initial's steps " + steps + "twin's steps " + twinsteps);
+
+            // proceed to next lowest manhattan board, if tie choose any, so later one overwrites
+            current = pq.delMin();
+            twincurrent = twinpq.delMin();
+            priorNode
+            twinPriorNode
+
+
         }
         // note, at this point initial and aTwin contain whatever the final solved state is.
         // one of them should have reached the goal.
      
         //if each neighbor has a higher manhattan score, ARE we done?
-        //if unsolveable set moves2solve to -1
-        if (false && aTwin.isGoal()) {
-            moves2solve = -1;
-            spq = null; //just to be sure
-        } else if (initial.isGoal()) {
-            //record the solution sequence
 
-            //Add the items you want to a Stack<Board> or Queue<Board> and return that
-            System.out.println("starting to solve");
-            spq = new MinPQ(); 
-            int solCnt = 0;
-            final MinPQ<Board> pqCopy = pq;
-            //Board[] solutionPath = new Board[moves2solve];
-            while (!pqCopy.isEmpty()) {
-                //if (pqCopy.min()
-                // TODO something about continue;
-                //Board nextStep = new Board(pqCopy.delMin());
-                Board bstep = pqCopy.delMin();
-                spq.insert(bstep);
-                if (bstep.equals(firstState)) break;
-            }
-            if (solCnt != spq.size()) System.out.println("error -- unexpected MinPQ result.");
-            moves2solve = spq.size();
-        } else {
-            System.out.println("error -- exactly ONE OF twin OR the initial state must be solvable.");    
-        }
-                // ?
     }
     public boolean isSolvable()  {
         // is the initial board solvable?
@@ -131,6 +148,11 @@ public class Solver {
         if (moves2solve == -1) return null;
         // now i know there exists a solution, so must just return it, no checks needed
         // spq was built in constructor
+        while (true) {
+            solutionNode
+                    solpq.insert(snTwin);
+        }
+
         return spq;
 }
     public static void main(String[] args) {
@@ -172,13 +194,17 @@ public class Solver {
         int moves;
         
         public int compareTo(Object that) {
-            Board thatb = (Board) that;
-            if (searchBoard.manhattan() < thatb.manhattan()) return -1;
-            if (searchBoard.equals(thatb)) return 0;
-            if (searchBoard.manhattan() >= thatb.manhattan()) return 1;
+            SearchNode thatsn = (SearchNode) that;
+            return (this.priority - that.priority);
+            /*
+            Board thatb = thatsn.searchBoard;
+            if (thatb.manhattan() < thatb.manhattan()) return -1;
+            if (thatb.equals(thatb)) return 0;
+            if (thatb.manhattan() >= thatb.manhattan()) return 1;
             //if (this.man < thatb.man) return -1;
             //if (this.man > thatb.man) return 1;
             return -5; // should never see that!
+            */
         }
     }
 }
