@@ -11,10 +11,8 @@
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
-//import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.StdOut;
 
     /**
      * Solves a Board, or identifies as unsolvable
@@ -23,7 +21,7 @@ import edu.princeton.cs.algs4.Stack;
      * 
      */
 public class Solver {
-    private int moves2solve = 0;
+    private int moves2solve = -1;
     private final Board initialboard;
     private final MinPQ pq;
     private final MinPQ twinpq;
@@ -61,6 +59,16 @@ public class Solver {
         SearchNode twinPriorNode = snTwin;
         Board currenttwin = aTwin;
         
+        // return a solved input board
+        if (initial.isGoal()) {
+            //if (board.isGoal()) {
+            pq.insert(snInitial);
+            solq.push(initialboard);
+            moves2solve = 0;
+            foundSolution = true;
+            solutionNode = snInitial;
+        }
+        
         //StdOut.println("starting with initial board, dim = " + initial);
         //StdOut.println("starting with twin board, dim = " + aTwin);
         //these are kind of for debugging, as showing an upper bound to the number of steps
@@ -71,10 +79,10 @@ public class Solver {
         //using two synchronized A* searches (e.g., using two priority queues). 
         // get the neighbors, and put them in order on the Queue.
         
-        int maxruns = 200;
+        int maxruns = 1000;
         int runs = 0;
         int minpriority = snInitial.priority;
-        int minpriorityCap = minpriority + 10;
+        int minpriorityCap = minpriority + 20;
         
         while (runs < maxruns && !foundSolution && !foundTwinSolution && minpriority < minpriorityCap) {
         //while (!initial.isGoal() && !aTwin.isGoal()) {
@@ -127,7 +135,7 @@ public class Solver {
                 if (snTwin.priority == 0) {
                 //if (board.isGoal()) {
                     //if unsolveable set moves2solve to -1
-                    moves2solve = -1;
+                    moves2solve = 0;
                     foundTwinSolution = true;
                 } 
             }
@@ -152,25 +160,26 @@ public class Solver {
     }
     public boolean isSolvable()  {
         // is the initial board solvable?
-        if (moves2solve == -1) return false;
-        if (moves2solve > 0) return true;
+        if (solutionNode != null) return true;
+        //if (solutionNode == null && moves2solve == 0) return false;
+        //if (moves2solve > 0) return true;
         //should return true if the initial states is the goal as well TODO
         return false;
     }
     public int moves()   {
-        // min number of moves to solve initial board; -1 if unsolvable
+        // min number of moves to solve initial board; Zero if unsolvable
         return moves2solve;
     }
     public Iterable<Board> solution() {
         // sequence of boards in a shortest solution; null if unsolvable
-        if (moves2solve == -1) return null;
+        if (this.isSolvable() == false) return null;
         // now i know there exists a solution, so must just return it, no checks needed
         // solq was built in constructor
         while (solutionNode.previousNode != null) {
                 solq.push(solutionNode.searchBoard);
                 solutionNode = solutionNode.previousNode;
         }
-        solq.push(initialboard);
+        if (moves2solve > 0) solq.push(initialboard);
         return solq;
 }
     public static void main(String[] args) {
