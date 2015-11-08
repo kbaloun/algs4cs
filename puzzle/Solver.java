@@ -14,6 +14,7 @@ import edu.princeton.cs.algs4.MinPQ;
 //import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Stack;
 
     /**
      * Solves a Board, or identifies as unsolvable
@@ -23,9 +24,10 @@ import edu.princeton.cs.algs4.Queue;
      */
 public class Solver {
     private int moves2solve = 0;
-    private MinPQ pq;
-    private MinPQ twinpq;
-    private Queue solq = new Queue();
+    private final Board initialboard;
+    private final MinPQ pq;
+    private final MinPQ twinpq;
+    private final Stack solq = new Stack();
     private SearchNode solutionNode = null; //to hold the solution
     
     public Solver(Board initial)  {
@@ -34,6 +36,7 @@ public class Solver {
         if (initial == null) throw new java.lang.NullPointerException("solver requires a not-null initial board");
         pq = new MinPQ();
         twinpq = new MinPQ();
+        initialboard = initial;
         //compute the priority function in Solver by calling hamming() or manhattan() and adding to it the number of moves.
         
         // create a SearchNode for the initial board, since it is the only one to not come off of the MinPQ
@@ -61,7 +64,7 @@ public class Solver {
         //StdOut.println("starting with initial board, dim = " + initial);
         //StdOut.println("starting with twin board, dim = " + aTwin);
         //these are kind of for debugging, as showing an upper bound to the number of steps
-        int steps = 0;
+        int steps = 0;  // include the initial board in the count
         int twinsteps = 0;
        
         
@@ -164,9 +167,10 @@ public class Solver {
         // now i know there exists a solution, so must just return it, no checks needed
         // solq was built in constructor
         while (solutionNode.previousNode != null) {
-                solq.enqueue(solutionNode.searchBoard);
+                solq.push(solutionNode.searchBoard);
                 solutionNode = solutionNode.previousNode;
         }
+        solq.push(initialboard);
         return solq;
 }
     public static void main(String[] args) {
@@ -203,10 +207,10 @@ public class Solver {
         of a searchnode so when you use MinPQ.delmin() you get searchnode with minimum priority.
         */
     private class SearchNode implements Comparable {
-        Board searchBoard;
-        SearchNode previousNode;
-        int priority;
-        int moves;
+        private Board searchBoard;
+        private SearchNode previousNode;
+        private int priority;
+        private int moves;
         
         public int compareTo(Object that) {
             SearchNode thatsn = (SearchNode) that;

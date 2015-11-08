@@ -88,7 +88,8 @@ public class Board {
                     if (blockarr[i][j] % N == 0) correctVpos -= 1;
                     // handle the wrap around cases 
 
-                    if ((j == 0 || j == N -1) && correctHpos == -1) correctHpos = N - 1;
+                    //if ((j == 0 || j == N -1) && correctHpos == -1) correctHpos = N - 1;
+                    if (correctHpos == -1) correctHpos = N - 1;
                     if (i == N - 1 && correctVpos == 0) {
                         //correctVpos = -1 + (int) Math.ceil(blockarr[i][j] / N);
                         //if (j == N - 1) correctVpos += 1;
@@ -171,7 +172,18 @@ public class Board {
         // does this board equal y?
         // TODO if dimensions don't match, return FALSE
         // TODO if type (as Board) don't match, return FALSE
+        if (y == null) return false;
+        if (y.getClass() == String.class) {
+            return false;
+            //String ystr = (String) y;
+            //Board yb = new Board(ystr);
+        } 
         Board yb = (Board) y;
+        
+        // first check dimensions
+        if (this.blockarr.length != yb.blockarr.length) return false;
+        if (this.blockarr[0].length != yb.blockarr[0].length) return false;
+        // check each element for equivalence
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if (this.blockarr[i][j] != yb.blockarr[i][j] && this.blockarr[i][j] != 0) return false;
