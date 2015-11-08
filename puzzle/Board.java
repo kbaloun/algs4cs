@@ -76,20 +76,30 @@ public class Board {
     public int manhattan()   {
         // sum of Manhattan distances between blocks and goal
         if (alreadyCalculatedMan) return man;
-        int pos = 0;
+        int pos = 1;
         man = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                pos++; //iterate pos first, because block 1 solves to zeroth array position
-                if (blockarr[i][j] != pos) {
-                    if (blockarr[i][j] == 0) continue; // skip zero block
+                if (blockarr[i][j] != pos && blockarr[i][j] != 0) {
+
                     // calculate vertical and horizontal distance to final position
-                    int correctHpos = blockarr[i][j] % N;
-                    int correctVpos = (int) Math.ceil(blockarr[i][j] / N);
+                    int correctHpos = (blockarr[i][j] % N) - 1;
+                    int correctVpos = (int) Math.floor(blockarr[i][j] / N);
+                    if (blockarr[i][j] % N == 0) correctVpos -= 1;
+                    // handle the wrap around cases 
+
+                    if ((j == 0 || j == N -1) && correctHpos == -1) correctHpos = N - 1;
+                    if (i == N - 1 && correctVpos == 0) {
+                        //correctVpos = -1 + (int) Math.ceil(blockarr[i][j] / N);
+                        //if (j == N - 1) correctVpos += 1;
+                    }
+                    int horz = Math.abs(j - correctHpos);
                     int vert = Math.abs(i - correctVpos);
-                    int hort = Math.abs(j - correctHpos);
-                    man = man + vert + hort;
+
+                    System.out.println("adding manhattan horz " + horz + " vert " + vert + " at i " + i + " j " + j + " at pos " + pos);
+                    man = man + vert + horz;
                 }
+                pos++; 
             }
         }
         alreadyCalculatedMan = true;
