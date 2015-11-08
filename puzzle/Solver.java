@@ -13,6 +13,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 //import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Queue;
 
     /**
      * Solves a Board, or identifies as unsolvable
@@ -24,7 +25,7 @@ public class Solver {
     private int moves2solve = 0;
     private MinPQ pq;
     private MinPQ twinpq;
-    private MinPQ solpq;
+    private Queue solq = new Queue();
     private SearchNode solutionNode = null; //to hold the solution
     
     public Solver(Board initial)  {
@@ -57,8 +58,8 @@ public class Solver {
         SearchNode twinPriorNode = snTwin;
         Board currenttwin = aTwin;
         
-        StdOut.println("starting with initial board, dim = " + initial);
-        StdOut.println("starting with twin board, dim = " + aTwin);
+        //StdOut.println("starting with initial board, dim = " + initial);
+        //StdOut.println("starting with twin board, dim = " + aTwin);
         //these are kind of for debugging, as showing an upper bound to the number of steps
         int steps = 0;
         int twinsteps = 0;
@@ -67,12 +68,15 @@ public class Solver {
         //using two synchronized A* searches (e.g., using two priority queues). 
         // get the neighbors, and put them in order on the Queue.
         
-        int test = 0;
+        int maxruns = 200;
+        int runs = 0;
+        int minpriority = snInitial.priority;
+        int minpriorityCap = minpriority + 10;
         
-        while (test < 3 && !foundSolution && !foundTwinSolution) {
+        while (runs < maxruns && !foundSolution && !foundTwinSolution && minpriority < minpriorityCap) {
         //while (!initial.isGoal() && !aTwin.isGoal()) {
 
-            test++;
+            runs++;
             steps++;
             twinsteps++;
             for (Board board : current.neighbors()) {
@@ -82,11 +86,16 @@ public class Solver {
                 sn.previousNode = priorNode;
                 sn.priority = board.manhattan();
                 sn.moves = steps;
+                if (sn.priority < minpriority) minpriority = sn.priority;
                 //Board board = sn.searchBoard;
-                StdOut.println("an initial board neighbor, dim = " + board);
+                //StdOut.println("on current board neighbor, of priority "+ sn.priority + " and dim = " + board);
                 
                 // do not include any board .equal() to the prior position
-                if (board.equals(priorNode.searchBoard)) continue;
+                if (board.equals(priorNode.searchBoard)) {
+                    //TODO this optimization doesn't seem to happen, this line never printed.
+                    StdOut.println("skipping insertion of equivalent board , dim = " + board);
+                    continue;
+                }
                 pq.insert(sn);
                 
                 if (sn.priority == 0) {
@@ -95,6 +104,9 @@ public class Solver {
                     foundSolution = true;
                     solutionNode = sn;
                 } 
+                if (minpriority > minpriorityCap) {
+                    System.out.println("stopping due to minpriorityCap at " + minpriority);
+                }
             }
             // Same for twin, synchronized
             for (Board twinboard : currenttwin.neighbors()) {
@@ -103,7 +115,7 @@ public class Solver {
                 snTwin.previousNode = twinPriorNode;
                 snTwin.priority = twinboard.manhattan();
                 snTwin.moves = twinsteps;
-                StdOut.println("an twin board neighbor, dim = " + twinboard);
+                //StdOut.println("on twin board neighbor, dim = " + twinboard);
                 
                 // do not include any board .equal() to the prior position
                 if (twinboard.equals(twinPriorNode.searchBoard)) continue;
@@ -116,16 +128,19 @@ public class Solver {
                     foundTwinSolution = true;
                 } 
             }
-            System.out.println("initial's steps " + steps + "twin's steps " + twinsteps);
+            //System.out.println("initial's steps " + steps + "twin's steps " + twinsteps);
+
 
             // proceed to next lowest manhattan board, if tie choose any, so later one overwrites
-            current = pq.delMin();
-            twincurrent = twinpq.delMin();
-            priorNode
-            twinPriorNode
-
+            SearchNode sn = (SearchNode) pq.delMin();
+            SearchNode sntwin = (SearchNode) twinpq.delMin();
+            priorNode = sn;
+            twinPriorNode = sntwin;
+            current = sn.searchBoard;
+            currenttwin = sntwin.searchBoard;
 
         }
+        System.out.println("solver constructor finished at" + steps + " twin's steps " + twinsteps);
         // note, at this point initial and aTwin contain whatever the final solved state is.
         // one of them should have reached the goal.
      
@@ -147,13 +162,12 @@ public class Solver {
         // sequence of boards in a shortest solution; null if unsolvable
         if (moves2solve == -1) return null;
         // now i know there exists a solution, so must just return it, no checks needed
-        // spq was built in constructor
-        while (true) {
-            solutionNode
-                    solpq.insert(snTwin);
+        // solq was built in constructor
+        while (solutionNode.previousNode != null) {
+                solq.enqueue(solutionNode.searchBoard);
+                solutionNode = solutionNode.previousNode;
         }
-
-        return spq;
+        return solq;
 }
     public static void main(String[] args) {
         // solve a slider puzzle (given below)
@@ -175,8 +189,9 @@ public class Solver {
             StdOut.println("No solution possible");
         else {
             StdOut.println("Minimum number of moves = " + solver.moves());
-            for (Board board : solver.solution())
+            for (Board board : solver.solution()) {
                 StdOut.println(board);
+            }
             
         }
     }
@@ -195,7 +210,7 @@ public class Solver {
         
         public int compareTo(Object that) {
             SearchNode thatsn = (SearchNode) that;
-            return (this.priority - that.priority);
+            return (this.priority - thatsn.priority);
             /*
             Board thatb = thatsn.searchBoard;
             if (thatb.manhattan() < thatb.manhattan()) return -1;

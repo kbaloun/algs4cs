@@ -29,7 +29,8 @@ public class Board {
     private int[][] blockarr; // the board array data
     private int ham = -5;  //anything other than -1, 0 or a positive integer
     private int man = -5;
-    private boolean alreadyCalculated = false;
+    private boolean alreadyCalculatedHam = false;
+    private boolean alreadyCalculatedMan = false;
 
     
     public Board(int[][] blocks) {
@@ -58,8 +59,9 @@ public class Board {
     }
     public int hamming()    {
         // number of blocks out of place
-        if (alreadyCalculated) return ham;
+        if (alreadyCalculatedHam) return ham;
         int pos = 0;
+        ham = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 // this could be done with mod math, but my brain is tired, pos counting is easy to read
@@ -68,13 +70,14 @@ public class Board {
                 if (blockarr[i][j] != pos) ham++;
             }
         }
-        alreadyCalculated = true;
+        alreadyCalculatedHam = true;
         return ham;
     }
     public int manhattan()   {
         // sum of Manhattan distances between blocks and goal
-        if (alreadyCalculated) return man;
+        if (alreadyCalculatedMan) return man;
         int pos = 0;
+        man = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 pos++; //iterate pos first, because block 1 solves to zeroth array position
@@ -89,7 +92,7 @@ public class Board {
                 }
             }
         }
-        alreadyCalculated = true;
+        alreadyCalculatedMan = true;
         return man;
 
     }
@@ -99,7 +102,8 @@ public class Board {
             ham = this.hamming();
             man = this.manhattan();
         }
-        if (ham == 0 && man == 0) {
+        if (ham == 0 || man == 0) {
+            // || and && should return same result... right?
             return true;
         }else {
             return false;
@@ -234,7 +238,7 @@ public class Board {
                 }
             }
         }
-        System.out.println("bcnt = " + bcnt);
+        //System.out.println("bcnt = " + bcnt);
         //Add the items you want to a Stack<Board> or Queue<Board> and return that
         Queue<Board> q = new Queue();
         //MinPQ bq = new MinPQ();
