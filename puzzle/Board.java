@@ -164,7 +164,7 @@ public class Board {
         Board yb = (Board) y;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                if (yb.blockarr[i][j] != this.blockarr[i][j]) return false;
+                if (this.blockarr[i][j] != yb.blockarr[i][j] && this.blockarr[i][j] != 0) return false;
             }
         }
         return true;

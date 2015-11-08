@@ -140,7 +140,7 @@ public class Solver {
             currenttwin = sntwin.searchBoard;
 
         }
-        System.out.println("solver constructor finished at" + steps + " twin's steps " + twinsteps);
+        //System.out.println("solver constructor finished at" + steps + " twin's steps " + twinsteps);
         // note, at this point initial and aTwin contain whatever the final solved state is.
         // one of them should have reached the goal.
      
