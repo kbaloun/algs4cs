@@ -41,6 +41,7 @@ public class Solver {
         //these are kind of for debugging, as showing an upper bound to the number of steps
         int steps = 0;
         int twinsteps = 0;
+       
         
         //using two synchronized A* searches (e.g., using two priority queues). 
         // get the neighbors, and put them in order on the Queue.
@@ -155,6 +156,29 @@ public class Solver {
             for (Board board : solver.solution())
                 StdOut.println(board);
             
+        }
+    }
+    
+            /*
+        Hi, you should add SearchNode to the priority queue (not a simple board). To do this you need to create
+        nested class in the Solver class (e.g. with fields Board, previous searchnode, priority and moves) 
+        that implements comparable interface. Then  you need to implement compareTo() method that is based on priority
+        of a searchnode so when you use MinPQ.delmin() you get searchnode with minimum priority.
+        */
+    private class SearchNode implements Comparable {
+        Board searchBoard;
+        SearchNode previousNode;
+        int priority;
+        int moves;
+        
+        public int compareTo(Object that) {
+            Board thatb = (Board) that;
+            if (searchBoard.manhattan() < thatb.manhattan()) return -1;
+            if (searchBoard.equals(thatb)) return 0;
+            if (searchBoard.manhattan() >= thatb.manhattan()) return 1;
+            //if (this.man < thatb.man) return -1;
+            //if (this.man > thatb.man) return 1;
+            return -5; // should never see that!
         }
     }
 }

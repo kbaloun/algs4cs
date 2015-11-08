@@ -20,7 +20,9 @@ import edu.princeton.cs.algs4.StdOut;
      * @param  blocks  N-N array of integers, defining the initial board
      * 
      */
-public final class Board implements Comparable {
+public class Board {
+//public class Board implements Comparable {
+// how the heck do i use minPQ without Comparable :-(
     
     private int N = 0; // the dimension
     private int[][] blockarr; // the board array data
@@ -246,16 +248,8 @@ public final class Board implements Comparable {
     //Comparable interface has method public int compareTo(Object o) which returns a negative integer,
     //    zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
     //Read more: http://javarevisited.blogspot.com/2011/06/comparator-and-comparable-in-java.html#ixzz3qqhmkVxx
-    
-    public final int compareTo(Object that) {
-        Board thatb = (Board) that;
-        if (this.manhattan() < thatb.manhattan()) return -1;
-        if (this.equals(thatb)) return 0;
-        if (this.manhattan() >= thatb.manhattan()) return 1;
-        //if (this.man < thatb.man) return -1;
-        //if (this.man > thatb.man) return 1;
-        return -5; // should never see that!
-    }
+    // I can't have the public compareTo within Board, the restricted API. :-(
+
 
     /*
     public final Comparator<Board> BY_MANHATTAN = new ByManhattan();
