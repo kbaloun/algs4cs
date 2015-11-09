@@ -21,12 +21,13 @@ import edu.princeton.cs.algs4.StdOut;
      * 
      */
 public class Solver {
-    private int moves2solve = -1;
+    private final int moves2solve;  
     private final Board initialboard;
     private final MinPQ pq;
     private final MinPQ twinpq;
     private final Stack solq = new Stack();
-    private SearchNode solutionNode = null; //to hold the solution
+    private final SearchNode solutionNode; //to hold the solution
+    private final SearchNode snInitial; 
     
     public Solver(Board initial)  {
         // find a solution to the initial board (using the A* algorithm)
@@ -38,13 +39,15 @@ public class Solver {
         //compute the priority function in Solver by calling hamming() or manhattan() and adding to it the number of moves.
         
         // create a SearchNode for the initial board, since it is the only one to not come off of the MinPQ
-        SearchNode snInitial = new SearchNode();
+        snInitial = new SearchNode();
         snInitial.searchBoard = initial;
         snInitial.previousNode = null;
         snInitial.priority = initial.manhattan();
         snInitial.moves = 0;
         SearchNode priorNode = snInitial;
         Board current = initial;
+        SearchNode finalNode = null;
+        int finalmoves = 0;
         
         boolean foundSolution = false;
         boolean foundTwinSolution = false;
@@ -64,9 +67,9 @@ public class Solver {
             //if (board.isGoal()) {
             pq.insert(snInitial);
             solq.push(initialboard);
-            moves2solve = 0;
+            finalmoves = 0;
             foundSolution = true;
-            solutionNode = snInitial;
+            finalNode = snInitial;
         }
         
         //StdOut.println("starting with initial board, dim = " + initial);
@@ -111,9 +114,9 @@ public class Solver {
                 
                 if (sn.priority == 0) {
                 //if (board.isGoal()) {
-                    moves2solve = steps;
+                    finalmoves = steps;
                     foundSolution = true;
-                    solutionNode = sn;
+                    finalNode = sn;
                 } 
                 if (minpriority > minpriorityCap) {
                     System.out.println("stopping due to minpriorityCap at " + minpriority);
@@ -134,8 +137,10 @@ public class Solver {
                 
                 if (snTwin.priority == 0) {
                 //if (board.isGoal()) {
-                    //if unsolveable set moves2solve to -1
-                    moves2solve = 0;
+                    //if unsolveable set moves2solve to something other than the initialized value is more clear,
+                    // but setting all to zero passes more test cases, since some run out of neighbors, before
+                    // the twins run out of neighbors
+                    finalmoves = -1;
                     foundTwinSolution = true;
                 } 
             }
@@ -151,6 +156,8 @@ public class Solver {
             currenttwin = sntwin.searchBoard;
 
         }
+        solutionNode = finalNode;
+        moves2solve = finalmoves;
         //System.out.println("solver constructor finished at" + steps + " twin's steps " + twinsteps);
         // note, at this point initial and aTwin contain whatever the final solved state is.
         // one of them should have reached the goal.
@@ -167,7 +174,7 @@ public class Solver {
         return false;
     }
     public int moves()   {
-        // min number of moves to solve initial board; Zero if unsolvable
+        // min number of moves to solve initial board; -1 if unsolvable (-1 per API)
         return moves2solve;
     }
     public Iterable<Board> solution() {
@@ -175,11 +182,13 @@ public class Solver {
         if (this.isSolvable() == false) return null;
         // now i know there exists a solution, so must just return it, no checks needed
         // solq was built in constructor
-        while (solutionNode.previousNode != null) {
-                solq.push(solutionNode.searchBoard);
-                solutionNode = solutionNode.previousNode;
+        SearchNode snode = solutionNode;
+        while (snode.previousNode != null) {
+                solq.push(snode.searchBoard);
+                snode = snode.previousNode;
         }
         if (moves2solve > 0) solq.push(initialboard);
+        //solq.push(initialboard);
         return solq;
 }
     public static void main(String[] args) {
@@ -215,7 +224,7 @@ public class Solver {
         that implements comparable interface. Then  you need to implement compareTo() method that is based on priority
         of a searchnode so when you use MinPQ.delmin() you get searchnode with minimum priority.
         */
-    private class SearchNode implements Comparable {
+    private final class SearchNode implements Comparable {
         private Board searchBoard;
         private SearchNode previousNode;
         private int priority;
