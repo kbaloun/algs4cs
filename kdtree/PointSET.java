@@ -25,18 +25,8 @@ import java.util.Iterator;
      */
 public class PointSET {
 
-/*
-Throw a java.lang.NullPointerException if any argument is null. Performance requirements.  Your implementation should support insert() and contains() in time proportional to the logarithm of the number of points in the set in the worst case; it should support nearest() and range() in time proportional to the number of points in the set. 
-*/
     private SET set;
     private SET inSet; // the results
-    
-    private static class Node {
-        private Point2D p;      // the point
-        private RectHV rect;    // the axis-aligned rectangle corresponding to this node
-        private Node lb;        // the left/bottom subtree
-        private Node rt;        // the right/top subtree
-    }
 
     public         PointSET()     {
         // construct an empty set of points 
@@ -65,14 +55,18 @@ Throw a java.lang.NullPointerException if any argument is null. Performance requ
     }
     public              void draw()    {
         // draw all points to standard draw 
-        
         // test
-                // set StdDraw
+        // set StdDraw
         StdDraw.setPenRadius(0.05);
         StdDraw.setPenColor(StdDraw.BLUE);
         StdDraw.point(0.5, 0.5);
         StdDraw.setPenColor(StdDraw.MAGENTA);
         StdDraw.line(0.2, 0.2, 0.8, 0.2);
+        for (Iterator it = set.iterator(); it.hasNext(); ) {
+            Point2D pt = (Point2D) it.next();
+            pt.draw();
+        }
+
         
     }
     public Iterable<Point2D> range(RectHV rect) {
@@ -82,7 +76,7 @@ Throw a java.lang.NullPointerException if any argument is null. Performance requ
         inSet = new SET();
         // find the points, put them in the bst to return
         //Interator it = set.iterator();
-        for (Iterator it = set.iterator(); it.hasNext(); ) {
+        for (Iterator it = set.iterator(); it.hasNext();) {
             Point2D pt = (Point2D) it.next();
             if (rect.contains(pt)) {
                 inSet.add(pt);

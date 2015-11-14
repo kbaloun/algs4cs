@@ -10,6 +10,7 @@
  ******************************************************************************/
 
 //import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.SET;
@@ -25,8 +26,15 @@ import java.util.Iterator;
 //mutable
 public class KdTree {
     
-    private SET kd; // the KDtree is still held in a BST.
+    private SET kd; // the KDtree is still held in a BST, but with directed nodes
     private SET inSet; // the results
+    
+    private static class Node {
+        private Point2D p;      // the point
+        private RectHV rect;    // the axis-aligned rectangle corresponding to this node
+        private Node lb;        // the left/bottom subtree
+        private Node rt;        // the right/top subtree
+    }
     
     public         KdTree() {                              
 // construct an empty set of points 
@@ -54,12 +62,24 @@ public class KdTree {
     }
     public              void draw()    {
         // draw all points to standard draw 
+                // test
+                // set StdDraw
+        StdDraw.setPenRadius(0.05);
+        StdDraw.setPenColor(StdDraw.BLUE);
+        StdDraw.point(0.5, 0.5);
+        StdDraw.setPenColor(StdDraw.MAGENTA);
+        StdDraw.line(0.2, 0.2, 0.8, 0.2);
+        for (Iterator it = kd.iterator(); it.hasNext(); ) {
+            Point2D pt = (Point2D) it.next();
+            pt.draw();
+        }
+        
     }
     public Iterable<Point2D> range(RectHV rect)  {
         if (rect == null) throw new NullPointerException("rectangle for range must not be null");
         // all points that are inside the rectangle
         inSet = new SET();
-        for (Iterator it = kd.iterator(); it.hasNext(); ) {
+        for (Iterator it = kd.iterator(); it.hasNext();) {
             Point2D pt = (Point2D) it.next();
             if (rect.contains(pt)) {
                 inSet.add(pt);
